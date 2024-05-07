@@ -54,9 +54,9 @@
 
 		int 	VoiceTxt;
 		int 	fp;
-		int 	buf = 768;
+		int 	buf = 768;				// refer 'NewMaxJson' above
 		int		myResult;
-		int		newJson			= 0;								// set when myJson != lastJson...we then call stfnProcessFlags();
+		int		newJson			= 0;	// set when myJson != lastJson...we then call stfnProcessFlags();
 
 		Dim(&myJson, buf);
 		myJson[0] = NUL;
