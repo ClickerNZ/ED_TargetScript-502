@@ -1,0 +1,266 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file: ED_Macros.ttm (v5.0.2) ... supports Elite Dangerous (Odyssey)
+
+// Refer Change Log.txt in parent folder
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// Index:	Line			FUNCTION
+//			Line 52:		fnCustomCommands()
+//			Line 73: 		m_RequestDock
+//			Line 86: 		m_DeploySRV
+//			Line 98: 		m_BoardShip
+//			Line 117: 		m_ShowGameStats
+//			Line 122: 		m_FastModeSwitch0
+//			Line 133: 		m_FastModeSwitch1
+//			Line 147: 		m_FastModeSwitch2
+//			Line 160: 		m_ReportCrimesToggle
+//			Line 181: 		m_NAVBeaconWing
+//			Line 207: 		m_NAVBeaconOff
+//			Line 232: 		m_EnterHanger
+//			Line 248: 		m_Launch
+//			Line 259:		m_ChangeColours
+
+
+// START
+
+	// Declare macros (must be declared as global)
+
+	int	m_RequestDock, m_DeploySRV, m_ShowGameStats, m_ReportCrimesToggle, m_NAVBeaconWing, m_NAVBeaconOff;
+	int	m_FastModeSwitch0, m_FastModeSwitch1, m_FastModeSwitch2, m_BoardShip, m_EnterHanger, m_Launch, m_ChangeColours;
+
+//---------------//			// MACROS Include a series of automated key presses to perform a specific task.
+// CUSTOM MACROS //			// The actual keys pressed can be found within the 'ED_Defines.ttm' file.
+//---------------//			// NOTE: Keys pressed are also defined within the game's bind file and MUST match what we're using here. 
+
+	int fnCustomCommands() {
+
+		// Being lazy...I've put this here rather than create yet another function
+		// Selects MapKey Assignment profile
+		
+		if (Flags == 0 & TrainingMode == ENABLED) {
+			if (AnnounceTraining) {
+				fnTextToSpeech("Training mode enabled, press a button or switch to hear what it does");
+			}
+			TrainingMap();										// Selects Training MapKey Profile
+		}
+		else {
+			if (AnnounceTraining) {
+				fnTextToSpeech("Training mode disabled. Enable this feature via E D User Settings file");
+			}
+			MainKeyMap();										// Selects Main Mapkey Profile if TrainingMode is disabled 
+		}
+		
+		// Define macros...
+
+		// MACRO: Auto-Docking Request
+		m_RequestDock = CHAIN(
+			LOCK+PULSE+TargetPanel, D(500),						// 1, e, e, left, right, spc, left, q, q, 1
+			PULSE+UINextPanel, D(),								// Limitation: This will only work correctly if Target Panel cursor in
+			PULSE+UINextPanel, D(),								//			   default/orig position, else will be misaligned.
+			PULSE+UILeft, D(),
+			PULSE+UIRight, D(),
+			PULSE+UISelect, D(500),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIBack,
+			LOCK);
+
+		// MACRO: SRV - Deploy
+		m_DeploySRV = CHAIN(
+			LOCK+PULSE+RolePanel, D(500),						// 3, down, spc, down, down, up, up, spc
+			PULSE+UIDown, D(),
+			PULSE+UISelect, D(500),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UISelect, D(500),
+			LOCK);
+
+		// MACRO: SRV - Board Ship								// Sometimes scrolling down past the "back" option wraps back to top and sometimes it doesn't
+		m_BoardShip = CHAIN(									// This needs further testing as previously, the menu pointer occassionally started at a different place
+			LOCK+PULSE+RolePanel, D(250),						// 3, spc, down, down, down, down, down, up, up, spc
+			PULSE+UISelect, D(1500),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),								// adding 5 extra 'down' in case the selector wraps back to top 
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIDown, D(200),
+			PULSE+UIUp, D(200),
+			PULSE+UIUp, D(200),									// should now be positioned at 'Board Ship'
+//			PULSE+UISelect, D(500),								// remove comment if macro is reliable for you
+			LOCK);
+
+		// MACRO: Display the combined OSD FPS & Bandwidth meters
+		m_ShowGameStats = CHAIN(
+			PULSE+ShowFramerate, D(500),						// L_CTRL+F
+			PULSE+ShowConnectionStatus);						// L_CTRL+B
+
+		// MACRO: Menulog to OPEN
+		m_FastModeSwitch0 = CHAIN(
+			LOCK+PULSE+RolePanel, D(250),						// Select any panel to ensure GUIFocus is set (!=0)		
+			PULSE+MenuLog, D(500),								// p, up, spc, spc, <wait>, spc, spc
+			PULSE+UIUp, D(500),
+			PULSE+UISelect, D(600),
+			PULSE+UISelect, D(6500),							// ** Depending on the load times of your PC, this value may need to be
+			PULSE+UISelect, D(600),								// 	  changed/increased (6000ms is default)
+			PULSE+UISelect, D(600),								// Select OPEN Mode
+			LOCK);
+
+		// MACRO: Menulog to PRIVATE GROUP
+		m_FastModeSwitch1 = CHAIN(
+			LOCK+PULSE+RolePanel, D(250),						// Select any panel to ensure GUIFocus is set (!=0) <-- Required???
+			PULSE+MenuLog, D(600),								// p, up, spc, spc, <wait>, spc, right, spc, spc, right, spc
+			PULSE+UIUp, D(600),
+			PULSE+UISelect, D(650),
+			PULSE+UISelect, D(8500),							// ** Depending on the load times of your PC, this value may need to be
+			PULSE+UISelect, D(650),								//    changed/increased
+			PULSE+UIRight, D(650),
+			PULSE+UISelect, D(650),
+			PULSE+UIRight, D(650),
+			PULSE+UISelect, D(650),								// Selects Private Group
+			LOCK);
+
+		// MACRO: Menulog to SOLO
+		m_FastModeSwitch2 = CHAIN(
+			LOCK+PULSE+RolePanel, D(250),						// Select any panel to ensure GUIFocus is set (!=0)		
+			PULSE+MenuLog, D(500),								// p, up, spc, spc, <wait>, spc, right, right, spc
+			PULSE+UIUp, D(500),
+			PULSE+UISelect, D(600),
+			PULSE+UISelect, D(6500),							// ** Depending on the load times of your PC, this value may need to be
+			PULSE+UISelect, D(600),								//    changed/increased
+			PULSE+UIRight, D(600),
+			PULSE+UIRight, D(600),
+			PULSE+UISelect, D(600),								// Selects SOLO mode
+			LOCK);
+
+		// MACRO: Toggle 'Report Crimes' on/off
+		m_ReportCrimesToggle = CHAIN(
+			LOCK+PULSE+SystemPanel, D(500),						// 4, e, e, e, down, down, right, right, spc, left, left, up, up, q, q, q, 4
+			PULSE+UINextPanel, D(),								// Limitation: This will only work correctly if Target Panel cursor in
+			PULSE+UINextPanel, D(),								//			   default/orig position, else will be misaligned.
+			PULSE+UINextPanel, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIRight, D(),
+			PULSE+UIRight, D(),
+			PULSE+UISelect, D(500),
+			PULSE+UILeft, D(),		 							// send selector back to home position when done
+			PULSE+UILeft, D(),
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIBack,
+			LOCK);
+
+		// MACRO: Toggle 'Wingman Beacon' - TEAM				// Under additional testing for Odyssey
+		m_NAVBeaconWing = CHAIN(
+			LOCK+PULSE+SystemPanel, D(500),						// 4, e, e, e, right, down, down, down, down, spc, down, spc, up, up, up, up, left, q, q, q, 4
+			PULSE+UINextPanel, D(),								// Limitation: This will only work correctly if Target Panel cursor in
+			PULSE+UINextPanel, D(),								//			   default/orig position, else will be misaligned.
+			PULSE+UINextPanel, D(),
+			PULSE+UIRight, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UISelect, D(500),
+			PULSE+UIDown, D(),
+			PULSE+UISelect, D(500),
+			PULSE+UIRight, D(),
+			PULSE+UIUp, D(),		 							// send selector back to home position when done <<-- TEST
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UILeft, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIBack,
+			LOCK);
+
+		// MACRO: Toggle 'Wingman Beacon' - OFF					// Under additional testing for Odyssey
+		m_NAVBeaconOff = CHAIN(
+			LOCK+PULSE+SystemPanel, D(500),						// 4, e, e, e, right, down, down, down, down, spc, spc, up, up, up, up, left, q, q, q, 4
+			PULSE+UINextPanel, D(),								// Limitation: This will only work correctly if Target Panel cursor in
+			PULSE+UINextPanel, D(),								//			   default/orig position, else will be misaligned.
+			PULSE+UINextPanel, D(),
+			PULSE+UIRight, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UIDown, D(),
+			PULSE+UISelect, D(750),								// Increase from 500 for Odyssey
+			PULSE+UISelect, D(750),
+			PULSE+UIRight, D(),
+			PULSE+UIUp, D(),		 							// send selector back to home position when done <<-- TEST
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UIUp, D(),
+			PULSE+UILeft, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIPrevPanel, D(),
+			PULSE+UIBack,
+			LOCK);
+
+		// MACRO: Enter hanger then facilities + refuel/repair/restock >>> NOTE: Works for Robigo Mines. Need to test for stations and carriers
+		m_EnterHanger = CHAIN(
+			LOCK,
+			PULSE+UIUp, D(),
+			PULSE+UISelect, D(1500),							//Refuel >>> Note delay shortened to 1500 from 2000
+			PULSE+UIRight, D(),
+			PULSE+UISelect, D(1500),							//Repair
+			PULSE+UIRight, D(),
+			PULSE+UISelect, D(1500),							//Restock
+			PULSE+UIRight, D(),
+			PULSE+UISelect, D(1500),							//Enter Hanger		
+			PULSE+UIDown, D(),
+			PULSE+UISelect, D(),								//Market			
+			LOCK);
+			
+		// MACRO: Launch the ship (from Launchpad screen)
+		// Issue: Rise time varies between ships and thruster power.
+		m_Launch = CHAIN(
+			LOCK+PULSE+UIDown, D(500),							// down, down, spc, (wait 20), R (hold for 1.5), L
+			PULSE+UIDown, D(500),
+			PULSE+UISelect, D(20000),
+			DOWN+ThrustUp, D(1500),								// Hold for 1.5
+			UP+ThrustUp, D(500),
+			PULSE+LandingGear, D(500),							// Retract gear
+			PULSE+SetSpeed25,									// Forward 25%
+			LOCK);
+			
+		// MACRO: Change Engine and Weapon Colours	
+		m_ChangeColours = CHAIN(
+			PULSE+EngineColour, D(250),
+			PULSE+WeaponColour, D(250)
+			);
+			
+	}	// End of fnCustomCommands()
+
+// END

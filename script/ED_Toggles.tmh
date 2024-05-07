@@ -1,0 +1,603 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file: ED_Toggles.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+
+// Refer Change Log.txt in parent folder
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// Index:	Line		FUNCTION
+//			Line 51: 	int tgTxt2Speech()
+//			Line 73: 	int tgEnhancedFAOFF()
+//			Line 104: 	int tgTriggerMode()
+//			Line 145: 	int tgLights()
+//			Line 203: 	int tgSilentRunning()
+//			Line 248: 	int tgCargoScoop()
+//			Line 284: 	int tgLandingGear()
+//			Line 323: 	int tgReverseThrust()
+//			Line 353:	int tgBoost()
+//			Line 377: 	int tgHardpoints()
+//			Line 414: 	int tgHUDMode()
+//			Line 429: 	int tgFSSMode()
+//			Line 456: 	int tgPlanetView()
+//			Line 481: 	int tgWarpDrive()
+//			Line 555: 	int tgExtCamera()
+//			Line 570:	int tgXAxis()
+	
+	
+// START
+
+//---------//
+// TOGGLES //
+//---------//
+
+	// TOGGLE: EnableVoice ON/OFF
+	
+	int tgTxt2Speech() {
+		int VoiceTxt;
+		
+		if (VoiceExists) {
+			EnableVoice = !EnableVoice;
+			if(EnableVoice) {
+				VoiceTxt = "Text to speech: Enabled";
+			}
+			else {
+				EnableVoice = ENABLED;
+				VoiceTxt = "Text to speech: Disabled";
+				EnableVoice = DISABLED;
+			}
+			fnVPOutput(VoiceTxt);
+		}
+		else {
+			printf("Voice.exe is not present\x0a");
+		}
+	}
+
+	// TOGGLE: Flight/Drive Assist OFF/ON - LED1
+
+	int tgEnhancedFAOFF() {
+		int fnName = "Flight Assist";
+		int reason;
+		if (fMainShip)	{
+			if (!fSupercruise) {
+				if (fFAOff) {
+					if (CurveInfo == PRINT) {
+						printf("FA-ON Curves:\x0a");
+					}
+					fnSetCurves(OldCurves, CurveInfo, TRUE, FALSE);					// Announce curve profile, don't save curve info
+				}
+				else {
+					if (CurveInfo == PRINT) {
+						printf("FA-OFF Curves:\x0a");
+					}
+					fnSetCurves(FAOFFCurves, CurveInfo, TRUE, FALSE);				// Announce curve profile, don't save curve info
+				}			
+				ActKey(PULSE+KEYON+FlightAssist);
+			}
+			else {
+				reason = "we are currently in Supercruise";
+				fnNotValid(fnName, reason);
+			}
+		}
+		else if (fSRV) {
+			ActKey(PULSE+KEYON+FlightAssist);										// Toggles Drive Assist 
+		}	
+	}
+
+	// TOGGLE:		Cycle between 'Discovery Scanner', 'Mining Laser' and 'Pulse Wave Scanner' modes
+	// Parameter:	1 = Primary Trigger Action, 2 = Secondary Trigger Action
+	// Notes:		Disco Scanner mode holds the trigger for 6.1 seconds
+	//				Mining Laser mode = press trigger to fire and press again to stop firing
+	//				Pulse Wave Scanner mode fires once every 7 seconds. Press trigger again to stop.
+	
+	int tgTriggerMode(int x) {
+	
+		int VoiceTxt;
+		
+		if (x == 1) {
+			FireModeP = FireModeP + 1;
+			if (FireModeP > 2) FireModeP = 0;
+			
+			if (FireModeP == 0) {
+				VoiceTxt = "Primary trigger action, discovery scanner";
+			}
+			if (FireModeP == 1) {
+				VoiceTxt = "Primary trigger action, mining laser";
+			}
+			if (FireModeP == 2) {
+				VoiceTxt = "Primary Trigger action, pulse wave scanner";
+			}
+		}
+		
+		if (x == 2) {
+			FireModeS = FireModeS + 1;
+			if (FireModeS > 2) FireModeS = 0;
+			
+			if (FireModeS == 0) {
+				VoiceTxt = "Secondary trigger action, discovery scanner";
+			}
+			if (FireModeS == 1) {
+				VoiceTxt = "Secondary trigger action, mining laser";
+			}
+			if (FireModeS == 2) {
+				VoiceTxt = "Secondary trigger action, pulse wave scanner";
+			}		
+		}
+		
+		fnVPOutput(VoiceTxt);		
+	}
+	
+	// TOGGLE: Ship Lights - LED2
+	// Parameter: 0 = Lights, 1 = Night Vision
+	// Uses Flags: fSRV, fLights, fSRVHiBeam, fNightVision
+
+	int tgLights(int x) {
+	
+		int VoiceTxt;
+		
+		int ltext  = "";
+		int lstate = "";
+		int arrows = "";
+		if (x == 0) {						// Toggle Lights
+			if (fSRV) {						// If we're in the SRV...
+				ltext = "SRV";
+				if (!fLights) {				// Transition: Off to LO
+					lstate = "LO";
+					arrows = ">>";
+//					fnVPOutput("SRV Lights ON");
+				}
+				else {
+					if (fSRVHiBeam) {		// Transition: HI to OFF
+						lstate = "OFF";
+						arrows = "<<";
+					}
+					else {					// Transition: LO to HI
+						lstate = "HI";
+						arrows = ">>";					
+					}
+				}
+			}
+			else if (fMainShip) {			// ...otherwise, we're in the ship...
+				ltext = "Ship";
+				if (!fLights) {				// If lights are off, turn them on
+					lstate = "ON";
+					arrows = ">>";
+				}
+				else {						// otherwise, turn them off
+					lstate = "OFF";
+					arrows = "<<";
+				}
+			}
+			ActKey(PULSE+KEYON+ShipLights);
+			printf("%s Lights:		%s		%s\x0a", ltext, lstate, arrows);
+			
+		}
+		if (x == 1) {						// Toggle Night Vision - checked/reported in ED_Statracker
+			ActKey(PULSE+KEYON+NightVision);
+		}
+	}
+
+	// TOGGLE: Silent Running - LED3
+	// Parameter: 'x' = OFF, ON, STROBE
+	// NOTE: Aligns across menulog/restart
+
+	int tgSilentRunning(int x) {
+		int fnName = "Silent Running";
+		int reason;
+				
+		if (x == ON | x == STROBE) {													// Toggle Silent Running - ON 
+			if (fSupercruise) {
+				fnNotValid(fnName, "we are in supercruise");
+			}
+			else if (fSRV) {
+				fnNotValid(fnName, "we are in the SRV");
+			}
+			else if (fOnFoot) {
+				fnNotValid(fname, "we are on foot");
+			}
+			else {
+				if (x == STROBE & SilentStrobe == DISABLED) {
+					AutoRepeat(hSRStrobe, 2000, &ActKey, PULSE+KEYON+SilentRunning);	// Strobe Silent Running 
+					SilentStrobe = ENABLED;
+					fnVPOutput("Silent Strobe:		ACTIVATED	!!");
+				}
+				else if (x == ON) {
+					ActKey(PULSE+KEYON+SilentRunning);
+					fnVPOutput("Silent Running:		ACTIVATED	!!");
+				}
+			}
+		}		
+		else if (x == OFF) {															// Toggle Silent Running - OFF
+			if (fSilentRunning) {
+				ActKey(PULSE+KEYON+SilentRunning);
+			}						
+			if (SilentStrobe) {								
+				StopAutoRepeat(hSRStrobe);												// Stop Strobe 
+				SilentStrobe = DISABLED;
+				fnVPOutput("Silent Strobe:		DEACTIVATED	!!");
+			}
+			else {
+				fnVPOutput("Silent Running:		DEACTIVATED	!!");
+			}
+		}
+	}
+
+	// TOGGLE: Cargo Scoop - LED4
+	// Parameter: 'x' = DEPLOY, RETRACT 
+	// NOTE: Aligns across menulog/restart <-- ED causes CargoScoop reset when menu log
+
+	int tgCargoScoop(int x) {
+		int fnName = "Cargo Scoop";
+		int reason;
+//		int action;
+		
+		if (!fSupercruise & !fDocked & !fLanded & (fSRV | fMainShip)) {				// Test we're in normal flight mode
+			if (x != fCargoScoop) {
+//				if(x == DEPLOY) {													// Was RETRACTED, Deploy...
+//					action = "Deploy";
+//					printf("Cargo Scoop:		DEPLOYED	>>\x0a");
+//				}
+//				else if(x == RETRACT) {												// Was DEPLOYED, Retract...
+//					action = "Retract";
+//					printf("Cargo Scoop:		RETRACTED	<<\x0a");
+//				}
+				ActKey(PULSE+KEYON+CargoScoop);
+			}
+			else {																	// we usually only get here during a menulog
+				DeferCall(500, &fnSetLEDs, NUL);			
+			}
+				
+		}
+		else if (x) {																// Cargo scoop toggle function not valid
+			if (fSupercruise) {
+				reason = "we are in supercruise";
+			}
+			if (fDocked | fLanded) {
+				reason = "we are docked";
+			}
+			fnNotValid(fnName, reason);			
+		}		
+	}
+
+	// TOGGLE: Landing Gear - LED5
+	// Parameter: 'Speedbrake'. Valid: 0 = Gear, 1 = Speedbrake. Only used for printf purposes
+
+	int tgLandingGear(int Speedbrake) {
+		int fnName = "Landing Gear";
+		int reason;
+		int GearString;
+		
+		if (!fSupercruise & !fSRV & !fLanded & !fDocked) {							// Test for normal flight mode 
+			GearString = "Landing Gear:";
+			if(Speedbrake) GearString = "Speed Brake:";
+			if (!fLandingGear) {													// Was RETRACTED, Deploy...
+				printf("%s		DEPLOYED	>>\x0a", GearString);
+				if (!Speedbrake) fnTextToSpeech("Landing gear deployed");
+			}
+			else {																	// Was DEPLOYED, Retract...
+				printf("%s		RETRACTED	<<\x0a", GearString);
+				if (Speedbrake) {													// Speedbrake retract...
+					SpeedbrakeDeployed = NO;										// ...reset the flag (avoids having to use 2nd DeferCall() in tgReverseThrust())
+				}
+				else fnTextToSpeech("Landing gear retracted");
+			}
+			ActKey(PULSE+KEYON+LandingGear);
+
+		}
+		else {																		// Landing gear / Speedbrake function not valid  
+			if (fSupercruise) {
+				reason = "we are in supercruise";
+			}
+			if (fSRV) {
+				reason = "we are in SRV";
+			}
+			if (fLanded | fDocked) {
+				reason = "we are landed";
+			}
+			fnNotValid(fnName, reason);			
+		}
+	}
+
+	// TOGGLE: 		Reverse Thrusters
+	// Parameter:	EnableSpeedBrake
+	// Valid:		0	Reverse, No Speedbrake 
+	//				1	Reverse, Use Speedbrake
+	//				2	Align Switch
+	//				3	Forward Thrust
+
+	int tgReverseThrust(int EnableSpeedBrake) {
+		int fnName = "Reverse";
+		int reason;
+
+		if (EnableSpeedBrake == 3) {
+			ReverseThrust = 0;
+		}
+		else {
+			ReverseThrust = 1;
+		}
+
+
+		if (!fSupercruise & !fOnFoot & (!fLanded | !fDocked)) {
+//			if (EnableSpeedBrake != 3) {
+//				ReverseThrust = 1;
+//			}
+//			else {
+//				ReverseThrust = 0;
+//			}
+//			if(EnableSpeedBrake != 2) {												// [PSB] held when Reverse toggled fixes misaligned switch
+				ActKey(PULSE+KEYON+ReverseThrottle);								// or press NUMPAD *
+//			}
+//			ReverseThrust = !ReverseThrust;											// Internal state flag 
+			if (ReverseThrust) {
+				printf("Throttle:			REVERSE	>>\x0a");
+
+				// TOGGLE: Speedbrake
+				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {				// If PSF OR (hardpoints deployed AND Gear Retracted)...
+					SpeedbrakeDeployed = YES;
+					tgLandingGear(SpeedbrakeDeployed);								// Use Landing Gear as a speed brake...
+					DeferCall(5000, &tgLandingGear, SpeedbrakeDeployed);			// ...then retract after 5 seconds
+				}
+			}
+			else
+				printf("Throttle:			FORWARD	>>\x0a");
+		}
+		else if (EnableSpeedBrake != 3){
+			if (fSuperCruise) reason = "we are in supercruise";
+			else if (fOnFoot) reason = "we are on foot";
+			else if (fLanded) reason = "we are landed";
+			else if (fDocked) reason = "we are docked";
+			fnNotValid(fnName, reason);
+		}
+	}
+
+	// TOGGLE:	Engine Boost
+	
+	int tgBoost() {
+		int fnName;
+		int reason;
+		
+		if (!fLandingGear & !fSupercruise & !fSRV) {								// Test for normal flight mode 
+			ActKey(PULSE+KEYON+EngineBoost);
+		}
+		else {																		// Boost function not valid 
+			fnName = "Engine Boost";
+			if (fLandingGear) {
+				reason = "Landing gear";
+			}
+			if (fSupercruise) {
+				reason = "Supercruise";
+			}
+			if (fSRV) {
+				reason = "SRV";
+			}
+			fnNotValid(fnName, reason);
+		}
+	}
+
+	// TOGGLE:	Hardpoints
+
+	int tgHardpoints() {
+		int fnName;
+		int reason;
+		
+		if (!fSupercruise) {
+			if(fMainShip) {
+				fnName = "Deploy Hardpoints";
+				if (!fHardpoints) {
+					printf("Hardpoints:		DEPLOYED	>>\x0a");
+				}
+				else {
+					printf("Hardpoints:		RETRACTED	>>\x0a");
+				}
+			}
+			if(fSRV) {
+				fnName = "Deploy Turret";
+				if(fSRVTurretRetracted) {
+					reason = "too close to the ship";
+					fnNotValid(fnName, reason);
+				}
+				else {
+					if (!fSRVTurretView) {
+						printf("Turret View:		Enabled		>>\x0a");
+					}
+					else {
+						printf("Turret View:		Disabled		<<\x0a");
+					}
+				}						
+			}
+			ActKey(PULSE+KEYON+DeployHardpoints);					// Depoy Hardpoints only if we're not in Supercruise
+		}
+		else
+			tgHUDMode();											// If we're in Supercruise, just toggle the HUD Mode
+	}
+
+	// TOGGLE: Analysis/Combat HUD Modes
+
+	int tgHUDMode() {
+		if (fHUDAnalysis) {
+			printf("HUD Mode:		COMBAT	>>\x0a");			// Switching to Combat Mode
+			if (FSSMode) {
+				FSSMode = OFF;
+			}
+		}
+		else {
+			printf("HUD Mode:		ANALYSIS	>>\x0a");		// Swicthing to Analysis Mode
+		}
+		ActKey(PULSE+KEYON+HUDMode);							// Switch HUD Modes
+	}
+
+	// TOGGLE: Enter/Exit FSS Mode
+
+	int tgFSSMode() {
+		int fnName = "FSS Mode";
+		int reason;
+		
+		stfnProcessGuiFocus();									// Get current FSSMode flag
+		
+		if (fSupercruise) {
+			if (!fHUDAnalysis) tgHUDMode();
+			if (!FSSMode) {	
+				ActKey(PULSE+KEYON+FSSModeON);
+				printf("FSS Mode:		ON		>>\x0a");
+				DeferCall(500, &fnSetSliderCurve, 0);
+			}
+			else {
+				ActKey(PULSE+KEYON+FSSModeOFF);
+				printf("FSS Mode:		OFF		>>\x0a");
+				DeferCall(500, &fnSetSliderCurve, 2);
+			}
+		}
+		else {
+			reason = "we are not in supercruise";
+			fnNotValid(fnName, reason);
+		}
+	}
+
+	//TOGGLE: Planet View.
+
+	int tgPlanetView() {
+		int fnName = "Toggle Planet View";
+		int reason;
+		int VoiceTxt;
+		
+		stfnProcessGuiFocus();									// Get SAAMode flag
+		
+		if (SAAMode) {
+			ActKey(PULSE+KEYON+FBView);
+			printf("Planet View:	TOGGLED		<>\x0a");
+			VoiceTxt = "Toggle planet view";
+			fnTextToSpeech(VoiceTxt);
+		}
+		else {
+			reason = "must be in SAA Mode";
+			fnNotValid(fnName, reason);
+		}
+	}
+
+	// TOGGLE: Warp Drive
+	// Parameter: 'JumpType'. Valid: 0 = Supercruise, 1 = Frameshift Drive
+	// Flags: fSupercruise, fFSDJump
+	
+	// Global Variables
+	
+	int	InitWarpDrive = DISABLED;				// Enables tracking when we call tgWarpDrive twice before any status flags change (eg FSDCharging)
+
+	int tgWarpDrive(int JumpType) {
+		int EngineText;
+		int WarpDrive;
+		int fnName;
+		int reason;
+		int VoiceTxt;
+				
+		if (JumpType) {
+			fnName = "Warp Drive";
+			EngineText = "Warp Drive:	";
+			WarpDrive = HyperJump;				// USB[0x0D] = "J"
+		}
+		else {
+			fnName = "Supercruise";
+			EngineText = "Supercruise:	";
+			WarpDrive = Supercruise;			// USB[0x54] = "/"
+		}
+
+		if (fFSDCharging | InitWarpDrive == ENABLED) {
+			printf("%s	CANCELLED	<<\x0a", EngineText);
+			ActKey(PULSE+KEYON+WarpDrive);
+			fnTextToSpeech("FSD Charge sequence cancelled");
+			StopAutoRepeat(hFSDCharge);											// Stop FSDCharge check if hit cancel inside 3 seconds 
+			InitWarpDrive = DISABLED;
+			return 0;
+		}
+		if (fFSDCooldown) {
+			printf("%s	COOLDOWN	<<\x0a", EngineText);
+			reason = "cooldown in progress";
+			fnNotValid(fnName, reason);
+			return 0;
+		}
+		if (fDocked) {
+			printf("%s	DOCKED	<<\x0a", EngineText);
+			reason = "we are currently docked";
+			fnNotValid(fnName, reason);
+			return 0;
+		}
+		if (fLanded) {
+			printf("%s	LANDED	<<\x0a", EngineText);
+			reason = "we are currently landed";
+			fnNotValid(fnName, reason);
+			return 0;
+		}		
+		if (fMassLocked) {
+			AutoRepeat(hMassLocked, 500, &fnCheckFSDMasslocked, EngineText);	// Keep trying for 2 seconds then fail if still MassLocked
+			return 0;
+		}
+		if (fFSDJump) {
+			printf("%s	HYPERSPACE	<<\x0a", EngineText);
+			return 0;		
+		}
+		if (fSupercruise & !JumpType) {
+			ActKey(PULSE+KEYON+WarpDrive);										// This *should* work even if we don't drop due to velocity
+			SelectDrop = 1;														// Drop selected, not forced
+			printf("%s:	DISENGAGED	<<\x0a", EngineText);
+			InitWarpDrive = DISABLED;
+		}
+		else {
+			if (fHardpoints)	tgHardpoints();									// Retract hardpoints if deployed
+			if (fLandingGear)	tgLandingGear(RETRACT);							// Retract landing gear if deployed
+			if (fCargoScoop)	tgCargoScoop(RETRACT);							// Retract cargo scoop if deployed			
+			ActKey(PULSE+KEYON+WarpDrive);										// ...and...punch it!
+			printf("%s:	ENGAGED	>>\x0a", EngineText);
+			WDRetries = 0;														// Reset failed Warpdrive counter
+			AutoRepeat(hFSDCharge, 500, &fnCheckFSDCharge, EngineText);			// Check for FSD Charge failure
+			InitWarpDrive = ENABLED;
+		}
+	}
+
+	// TOGGLE: External Camera
+
+	int tgExtCamera() {
+		CameraMode = !CameraMode;
+		ActKey(PULSE+KEYON+ExtCamera);
+		if(CameraMode) {
+			printf("External Camera:	ON\x0a");
+			DeferCall(100, &ActKey, PULSE+KEYON+EnterFreeCameraMode);
+			DeferCall(200, &ActKey, PULSE+KEYON+HideCameraGUI);
+		}
+		else {
+			printf("External Camera:	OFF\x0a");
+		}
+	}
+	
+	// TOGGLE:	X-Axis between Roll and Yaw
+	
+	int tgXAxis(int dummy = NUL) {
+		
+		int VoiceTxt;
+
+		ActKey(PULSE+KEYON+SwapRollYaw);
+		XAxisMode = !XAxisMode;
+		
+		if (XAxisMode) {
+			VoiceTxt = "X Axis set to Yaw";
+		}
+		else {
+			VoiceTxt = "X Axis set to Roll";
+		}
+		fnVPOutput(VoiceTxt);
+	}
+
+// END

@@ -1,0 +1,74 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file: ED_GlobalVars.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+
+// Refer Change Log.txt in parent folder
+
+// NOTE:	All user related settings can be found in the ED_UserSettings.tmh file
+//			Changing any of the below global variables will have significant effect on the script
+//			and may cause errors. Change these at your own risk
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// START
+
+//----------------//
+// DEFAULT STATES //   					// GLOBAL VARIABLE INITIALISATION, DESCRIPTION & USAGE
+//----------------//
+
+	int VoiceExists;					// Declared here and set in initTextToSpeech()
+	int SerialText			= 0;		// Default TextToSpeech action is Parallel (call voice.exe and immediately process next instruction)
+										// Set SerialText prior to calling fnVPOutput() or fnTextToSpeech() to call voice.exe and wait until complete)
+	int SounderExists;					// Declared here and set in initSoundFX()
+
+	int JSProfile;						// Used in fnSetCurves() and fnEnhancedFAOFF() (see EDFunctions.tmh) Values = 0, 1 or 2
+	int JSCurveSetting;
+	int DXCurveSetting;
+	int OldCurves;
+
+	int PIPMode;						// Set/Reset via H4P and fnPIPMode() and used in fnPIPManager() to change PIP management profile (see EDFunctions.tmh)
+										// PIPMode saved/restored via stfnMyStates()
+	int PIPTxt;							// PIPMode descriptor
+	
+	int	SetLED;							// SetLED determines LED brightness. Refer fnLEDBrightness()
+
+	int Debug				= 0;		// Debug mode for testing. 0 = OFF, 1 = ON. Prints additional info to console and announces key flag settings
+	int StartupLock			= 1;		// Prevent triggering keystrokes during initialisation
+	int GameLoaded			= 0;		// Set in fnGameStarted() when game is detected as running
+	
+	int Odyssey				= 0;		// 0 = Horizons, 1 = Odyssey. We check this when game starts running via presence of 'Flags2' Key in status.json
+	
+	int ConnectionStatus	= 0;		// Track if "ShowConnectionStatus" is on or off to avoid accidental toggle off during mode switch
+	int ReverseThrust		= 0;		// Set/Reset in tgReverseThrust()
+	int SpeedbrakeDeployed	= 0;		// Set/Reset in tgReverseThrust() and used in tgLandingGear()
+	int FSSMode				= 0;		// Set/Reset in tgFSSMode()
+	int SAAMode				= 0;		// Used in tgPlanetView()
+	int CameraMode			= 0;		// Set/Reset in tgExtCamera() and used in fnAdvancedSCB() and fnHeatsink() (for console Zoom messages)
+	int SelectDrop			= 0;		// Use to detect if Supercruise drop was selected or forced
+	int InHanger			= 0;		// Set/Reset in fnHangerServices()
+	int OrbitalCruise		= 0;		// Track when entering Orbital Cruise
+	int FireModeP			= 0;		// 0 = Press to fire/Release to Stop, 1 = Press to fire, Press again to stop
+	int FireModeS			= 0;		// 0 = Press to fire/Release to Stop, 1 = Press to fire, Press again to stop
+	int ShipDismissed		= 0;		// Track when Ship is dismissed/recalled via EORIGN-U
+	int SilentStrobe		= 0;		// Used to track when we are using the Silent Running Strobe feature
+	int XAxisMode			= 0;		// Used to track which mode X-Axis is, Roll (default) or Yaw
+	
+	int WDRetries			= 0;		// Failed Warpdrive retry count (eg MassLocked when trying to go to supercruise)
+
+			
+// END

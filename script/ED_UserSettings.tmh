@@ -1,0 +1,230 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file: ED_UserSettings.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+
+// Refer Change Log.txt in parent folder
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// START
+
+//----------------//
+// MapKey Profile //
+//----------------//
+
+	define	MapKeyProfile		FULL					// Valid Settings are FULL or BASIC 
+														// FULL uses all the advanced functions available for Axis, Switches, Triggers and Buttons
+														// BASIC sends simple, plain keystrokes...no macro or function calls, no smarts...great for beginners
+
+//--------------//
+// LED settings //
+//--------------//
+
+	define	FlashLEDs			ENABLED					// Flash the Status LEDs when status changes. ENABLED or DISABLED
+	int		LEDLevel			= 1;					// Default starting LED Level. Valid Levels = 0 - 5. Refer fnLEDBrightness()
+														// LEDLevel 0: 0	- 42 (off)
+														// LEDLevel 1: 43	- 85 (dimmest)
+														// LEDLevel 2: 86	- 128
+														// LEDLevel 3: 129 	- 171
+														// LEDLevel 4: 172	- 214
+														// LEDLevel 5: 215 	- 255 (brightest)
+
+//----------------//
+// Status.json    //
+//----------------//
+
+	// WARNING:		This script relies on and makes extensive use of 'status.json' key values
+	//				If the script cannot find status.json, it will abort.
+
+	// NOTE:		Set the 'alias' below to point to the Elite Dangerous journal folder / status.json file
+	//				The below path is usually where the Elite Dangerous journal files can be found.
+	//				Just replace '<username>' with your Windows username, NOT your CMDR Name!!!
+	
+//	alias	JournalFolder		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
+//	alias	StatusFile			= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
+
+//	here's mine as an example...
+
+	alias	JournalFolder		= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
+	alias	StatusFile			= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
+	alias	MaxStatusFile		= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
+	
+	define	StatusReadRate		500		// Set Read Loop rate in milliseconds. (ie 500 = read status.json twice a second)
+										// You may see issues if this is set too small. If you do, raise this value to 750, 1000, or higher
+
+//----------------//
+// MyStatusFile   //
+//----------------//
+
+	// NOTE:		Set the 'alias' below to point to where you want to save and load script variables that are not tracked via status.json
+	//				I've included an example below but so long as you create the folder structure, you can put this anywhere on your PC
+	//				Saves the script states after a game restart or relog. 
+	
+	alias	MyStatusFile		= "d:\\Thrustmaster\\ED_TargetScript\\MyStatusFile.json";
+
+
+//----------------//
+// Text To Speech //
+//----------------//
+
+	// Set VoicePath to where you copied voice.exe. Add any command line arguments you want within 'VoiceCMD'!
+	// Run voice.exe in a command prompt (from where you copied it) with no arguments etc to see a list of options
+	// Run voice.exe -l to get a list of installed voices. Additional voices available via download from microsoft.com
+	// https://support.microsoft.com/en-nz/help/22805/windows-10-supported-narrator-languages-voices 
+	// To make the voices visible to non MS apps including voice.exe, you need to tweak the registry using the method described here;
+	// https://www.ghacks.net/2018/08/11/unlock-all-windows-10-tts-voices-system-wide-to-get-more-of-them/
+	// VoiceVolume should be set to the relative volume level (%) for voice.exe 
+	// VoiceCMD is example on how to set command line arguments. -r <rate> ... range = -10 (slowest) to +10 (fastest)
+	// Refer fnTextToSpeech() function in ED_Functions.tmh for usage examples
+
+	int		EnableVoice			= ENABLED;				// ENABLED or DISABLED. Enable this if you wish to use "voice.exe". 
+														// Toggled via tgTxt2Speech();
+														
+	alias	VoicePath			= "d:\\Thrustmaster\\ED_TargetScript\\voice.exe";
+	
+	int		VoiceVolume			= 75;					// Default Volume set at 75% Settable via fnVoiceVolume()
+														// Note: VoiceVolume gets saved to MyStatus file when game halts and is reloaded at script start
+
+	// Add or remove voices available on your PC. Run 'voice.exe -l" (lower case L) in a command line where you copied voice.exe to, to see which voices are installed.
+	// The below are the voices I've installed and tested on my PC...
+	
+	alias	Hazel				= "-n \"Microsoft Hazel Desktop\"";		// Adult, Female,	en-GB
+	alias 	Susan				= "-n \"Microsoft Susan\"";				// Adult, Female,	en-GB
+	alias	George				= "-n \"Microsoft George\"";			// Adult, Male,		en-GB	
+	alias	James				= "-n \"Microsoft James\"";				// Adult, Male,		en-AU
+	alias	Catherine			= "-n \"Microsoft Catherine\"";			// Adult, Female,	en-AU
+	alias	Sean				= "-n \"Microsoft Sean\"";				// Adult, Male,		en-IE
+	alias	Richard				= "-n \"Microsoft Richard\"";			// Adult, Male,		en-CA
+	alias	Linda				= "-n \"Microsoft Linda\"";				// Adult, Female,	en-CA
+	alias	David				= "-n \"Microsoft David Desktop\"";		// Adult, Male,		en-US
+	alias	Mark				= "-n \"Microsoft Mark Desktop\"";		// Adult, Male,		en-US
+	alias	Zira				= "-n \"Microsoft Zira Desktop\"";		// Adult, Female,	en-US 
+	alias	Heera				= "-n \"Microsoft Heera\"";				// Adult, Male,		en-IN
+	alias	Ravi				= "-n \"Microsoft Ravi\"";				// Adult, Female,	en-IN 
+	
+	int		DefaultVoice		= &Catherine;			// Set your preferred (installed) voice here
+
+	alias	VoiceCMD			= "-r 1";				// "-r 0" = normal rate. "-r 2" = 20% faster
+	
+	define	TrainingMode		ENABLED					// ENABLED or DISABLED. When game is not running, pressing a button/switch announces basic function
+//	define	TrainingMode		DISABLED				// ENABLED or DISABLED. When game is not running, pressing a button/switch announces basic function
+	define	AnnounceTraining	DISABLED				// DISABLED = Do not announce training mode, ENABLED = Announce training mode
+
+//------------------//
+// WAV Sound Player //
+//------------------//
+
+	// Refer fnSoundFX() function for usage etc
+	// Set SoundPath to where you copied sounder.exe. 
+	// Set WAVPath to where you copied any wav files you wish to use
+	// Set 'SoundCMD' for any command line arguments you wish to use 
+	// Run sounder.exe in a command prompt window (from where you copied it) with no arguments etc to see a list of options
+
+	int		EnableSoundFX		= ENABLED; 				// ENABLED or DISABLED. Enable this if you wish to use "sounder.exe"
+	
+	alias	SoundPath			= "d:\\Thrustmaster\\ED_TargetScript\\sounder.exe";
+	alias	WAVPath				= "d:\\Thrustmaster\\ED_TargetScript\\sounds\\";
+	alias	SoundCMD			= "";
+
+
+//----------//
+// PIP Mode //
+//----------//
+
+	//	There are 6 PIPModes available.
+	//	You may set the Default mode below to one of the following values
+	//
+	//	0 = Single		1 PIPs per press
+	//	1 = Double		2 PIPs per press
+	//	2 = Attack		4 PIPs to selected system, 2 PIPs to secondary attack focussed system (ie ENG + WEP focussed) 
+	//	3 = Defend		4 PIPs to selected system, 2 PIPs to secondary defend focussed system (ie SYS + ENG focussed)
+	//	4 = Recharge	4 PIPs to selected system, 1 PIP to each of the other 2
+	//	5 = Gen Purpose	3 PIPs to selected system, 3 PIPs to secondary 
+	//
+	//	Refer fnPIPManager() function within ED_Functions.tmh for more info.
+	
+	define DefaultPIPMode		3						// Set this to your preferred PIPMode. Value is set on the fly via H4P (see fnPIPMode() in ED_Functions.tmh)
+
+
+//--------------------------//
+// General Status Variables //
+//--------------------------//
+
+	int 	ShowFlags			= DISABLED;				// Set/Reset in fnDebug() and used in stfnProcessFlags()
+	
+	define	AutoHanger			DISABLED				// !! TESTING !!	// ENABLED = Initiate Hanger+Station Services automatically when docked, DISABLED = don't
+														// !! TESTING !!	// Hanger services on Carrier is completely different to stations in Horizons and we cannot yet
+																			// dynamically determine if docked in station versus carrier
+																			// ISSUE: triggered when reboarding ship from on foot when enabled
+															
+	define	AutoHUD				ENABLED					//	Enable to toggle HUD to Analysis Mode when FSD engaged
+	define	AutoGearUP			DISABLED				//	Enable to retract landing gear when lifting off using the script 'launch' function 
+	define	AutoGearDOWN		DISABLED				//	Enable to deploy landing gear when request docking
+	define	AutoHeatsink		ENABLED					//	Enable to fire a heatsink when temp > 100% (requires launcher and ammo)
+	define	AutoStrobe			ENABLED					//	Enable to strobe silent running if in danger and shields drop
+	
+	define	CommsModule			DISABLED				//	ED_CommsControl - still in development
+	
+	define	ChatTABs			2						//	Set to number of Chat Tabs you have setup within the Comms Panel, in game. (Valid = 1-4)
+
+//--------------------------//
+// Axis Curves and Settings //
+//--------------------------//
+
+	// Refer "Axes" chapter (p27) in the Target Script Editor Basics v1.5 manual for more detail
+	// The below constructs support S-Curves
+
+	// Define the deadzones and zoom factor
+	// ------------------------------------
+	define	Joystick_L_DZ 		0						// Set Joystick Deadzone	Left
+	define	Joystick_C_DZ 		1						// Set Joystick Deadzone	Centre
+	define	Joystick_R_DZ 		0						// Set Joystick Deadzone	Right
+	define	Joystick_Zoom		0						// Set Joystick Zoom factor
+	
+	define	Rudder_L_DZ			0						// Set Rudder 	Deadzone	Left
+	define	Rudder_C_DZ			10						// Set Rudder 	Deadzone	Centre
+	define	Rudder_R_DZ			0						// Set Rudder 	Deadzone	Right
+	define	Rudder_Zoom			0						// Set Rudder 	Zoom factor
+	
+	define	Slew_L_DZ			0						// Set Slew 	Deadzone	Left
+	define	Slew_C_DZ			15						// Set Slew 	Deadzone	Centre
+	define	Slew_R_DZ			0						// Set Slew 	Deadzone	Right
+	define	Slew_Zoom			0						// Set Slew 	Zoom factor 
+
+	define	FAOFFCurves			SLOW					// Set Curve profile desired for FA-OFF. Valid settings = OFF, MILD, MEDIUM or SLOW (see below) 
+	define	CurveInfo			NOPRINT					// Set if you want curve info printed to console each time we change. Valid settings = PRINT or NOPRINT
+	define	EnableTFRPRudder	ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP Rudder.
+	define	SwapRoll4Yaw		DISABLED				// Set to ENABLED if you wish to set X-Axis to Yaw (Default = Roll)
+
+	// The below curve arrays are set for "off", "mild", "medium" or "slow" and controlled via the Autopilot switch
+	// Eg 	AP Switch set at APPAT-O	= (Curve = 1)
+	//		AP Switch set at APPAT-I	= (Curve = 2)
+	//		AP Switch set to APAH		= (Curve = 0)
+	//		AP Switch set to APALT-O	= (Curve = 3)
+	//		AP Switch set to APALT-I	= (Curve = 4)
+	 
+	// Define curve & zoom arrays
+	// --------------------------   APPAT-O	APPAT-I	APAH	APALT-O	APALT-I	// Used within fnSetCurves() and applied to JS, Rudder and Slew  (x, y & z axis)
+	short	Joystick_Curve[] 	= {	1,		2,		0,		3,		4 };	// Autopilot switch (Up = MILD curves, down = SLOWER curves)
+	
+	short	Rudder_Curve[]		= { 1,		2,		0,		3,		4 };	// Autopilot switch (Up = MILD curves, down = SLOWER curves)
+	 
+	short	Slew_Curve[]		= {	2,		2,		0,		2,		2 };	// Set Slew Curve
+								//	MILD	MEDIUM	NONE	SLOW	SLOWEST
+
+// END

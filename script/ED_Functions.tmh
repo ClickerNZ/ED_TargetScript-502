@@ -1,0 +1,1408 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file: ED_Functions.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+
+// Refer Change Log.txt in parent folder
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// Index:	Line		FUNCTION
+//			Line 69: 	int fnNotValid()
+//			Line 92: 	int fnSetCurves()
+//			Line 161: 	int fnSetSliderCurve()
+//			Line 192: 	int fnGetFlightMode()
+//			Line 210:	int fnLEDBrightness()
+//			Line 230: 	int fnFlashLED()
+//			Line 247: 	int fnSetLEDs()
+//			Line 278: 	int fnFlashStart()
+//			Line 316: 	int fnTextToSpeech()
+//			Line 348: 	int fnVoiceVolume()
+//			Line 401: 	int fnSoundFX()
+//			Line 417: 	int fnGameStarted()
+//			Line 511: 	int fnPIPMode()
+//			Line 562: 	int fnPIPManager()
+//			Line 599: 	int fnPIPMapper()
+//			Line 639: 	int fnAdvFireControl()
+//			Line 712: 	int fnAdvancedSCB()
+//			Line 744: 	int fnHeatsink()
+//			Line 758: 	int fnChaff()
+//			Line 776: 	int fnDeploySRV()
+//			line 820:	int fnDRShip()
+//			Line 849: 	int fnRequestDock()
+//			Line 871: 	int fnHangerServices()
+//			Line 915:	int fnIdleLock()
+//			Line 947:	int fnCheckFSDCharge()
+//			Line 979:	int fnCheckFSDMassLocked()
+//			Line 1008:	int fnClearChatBox()
+//			Line 1063: 	int fnModeSwitch()
+//			Line 1122:	int fnVPOutput()
+//			Line 1134: 	int fnPrintState()
+//			Line 1145: 	int fnStateDump()
+//			Line 1312: 	int fnDebug()
+//			Line 1337:	int fnGetTOD()
+//			Line 1355:	int fnGetDate()
+//			Line 1378:	int findstr()
+//			Line 1405:	int ModKey()			// not used
+
+//------------------//
+// CUSTOM FUNCTIONS //
+//------------------//
+
+	// FUNCTION:	Announce if function called is not valid
+	// Parameters:	fnName = function that called here. reason = reason text parsed from calling fnName
+	
+	int fnNotValid(int fnName, int reason=0) {
+	
+		int msg = "not available at this time,";
+		int buf = strlen(fnName) + strlen(msg) + strlen(reason) + 3;		// include the 2x spaces + nul
+		
+		char fntxt;
+		Dim(&fntxt, buf);
+		fntxt[0] = NUL;
+		sprintf(&fntxt, "%s %s %s", fnName, msg, reason);
+		fntxt[buf-1] = 0;													//terminate char array with a nul
+		
+		fnTextToSpeech(&fntxt);
+		printf("!!! Function: %s !!!\x0a", &fntxt);		
+	}
+	
+
+	// FUNCTION:	Set Joystick and rudder curves according to Autopilot switch position.
+	// Parameters:	profile		=	0 - 5 (see JSProfile in EDGlobalVars)
+	// 				print		=	NO (default) to supress console print of Curve settings, YES to print
+	//				announce	=	NO to supress voice announcement at game start/restart, else YES (default) to announce
+	//				manual		=	TRUE (default) when called by using Autopilot Switch, FALSE when called via tgEnhancedFAOff()
+	//								...this saves last manually selected state for FA-ON
+	
+	int fnSetCurves(int profile, int print=NO, int announce=YES, int SaveCurveInfo=TRUE) {
+
+		int VoiceTxt;
+
+		JSProfile = profile;
+		if (SaveCurveInfo == TRUE) {
+			OldCurves = profile;
+		}
+
+		if (profile == NONE) {
+			JSCurveSetting = "NONE";
+			VoiceTxt = "Curves None";
+		}
+		if (profile == MILD) {
+			JSCurveSetting = "MILD";
+			VoiceTxt = "Curves mild";
+		}
+		if (profile == MEDIUM) {
+			JSCurveSetting = "MEDIUM";
+			VoiceTxt = "Curves medium";			
+		}
+		if (profile == SLOW) {
+			JSCurveSetting = "SLOW";
+			VoiceTxt = "Curves slow";					
+		}
+		if (profile == SLOWEST) {
+			JSCurveSetting = "SLOWEST";
+			VoiceTxt = "Curves slowest";					
+		}
+		
+		// Set Joystick curves and force re-read of axes
+		SetSCurve(&Joystick, JOYX,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
+		SetSCurve(&Joystick, JOYY,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &Joystick, JOYX);
+		DefEventHandler(EV_HID_INPUT_DATA, &Joystick, JOYY);
+
+		// Set Rudder curve and force re-read of axis
+		SetSCurve(&TFRPRudder, TRUDDER, Rudder_L_DZ,	Rudder_C_DZ,	Rudder_R_DZ,	Rudder_Curve[profile],	Rudder_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &TFRPRudder, TRUDDER);
+
+		// Set Slew Control curves and force re-read of axes 
+		SetSCurve(&Throttle, SCX, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
+		SetSCurve(&Throttle, SCY, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, SCX);
+		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, SCY);
+
+
+		if (StartupLock) {
+			printf("Joystick & Pedal Curves	... done.\x0a");
+			printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
+		}
+		else if (announce) {
+			fnTextToSpeech(VoiceTxt);
+		}
+		
+		if (print) {
+			printf("Joystick Curves[%s]	: LDZ=%d, CDZ=%d,  RDZ=%d, Curve= %d, Zoom= %d\x0a", JSCurveSetting, Joystick_L_DZ, Joystick_C_DZ, Joystick_R_DZ, Joystick_Curve[profile], Joystick_Zoom);
+			printf("Rudder Curves[%s]	: LDZ=%d, CDZ=%d, RDZ=%d, Curve= %d, Zoom= %d\x0a", JSCurveSetting, Rudder_L_DZ, Rudder_C_DZ, Rudder_R_DZ, Rudder_Curve[profile], Rudder_Zoom);
+			printf("Slew Curves[%s]	: LDZ=%d, CDZ=%d, RDZ=%d, Curve= %d, Zoom= %d\x0a", JSCurveSetting, Slew_L_DZ, Slew_C_DZ, Slew_R_DZ, Slew_Curve[profile], Slew_Zoom);
+		}
+		else if (announce) {
+			printf("Curve Profile: [%s]\x0a", JSCurveSetting);
+		}
+	}
+
+
+	// FUNCTION:	Set context driven DX-SLIDER curves
+	// Parameter:	0 = linear, 1 or 2 = non-linear
+
+	int fnSetSliderCurve(int x) {
+		DXCurveSetting = x;												// Variable used in Status Printout
+		int SliderProfile;
+		int SliderCurve;												// Used to define the LIST and can use within EXEC
+		
+		if (x == 0) {													// FSS Mode Radar
+			SetJCurve(&Throttle, THR_FC, 50, 50);						// Linear progression. Low sensitivity
+			SliderProfile = "FSS Mode";
+		}
+		if (x == 1)	{													// Normal flight
+			SliderCurve = LIST(0,0, 40,25, 75,50, 85,75, 100,100);
+			SetCustomCurve(&Throttle, THR_FC, SliderCurve);
+			SliderProfile = "Normal Flight";
+			
+		}
+		if (x == 2)	{													// Supercruise
+			SliderCurve = LIST(0,0, 50,10, 75,30, 90,50, 100,100);
+			SetCustomCurve(&Throttle, THR_FC, SliderCurve);
+			SliderProfile = "Supercruise";
+		}
+		
+		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, THR_FC);			// Forces re-read of slider axis
+
+		if (!StartupLock) {
+			printf("Slider Curve Profile:	[%d] %s\x0a", x, SliderProfile);
+		}
+	}
+
+
+	// FUNCTION: Determine current flight mode and set Slider Curves appropriately
+	
+	int fnGetFlightMode() {
+		int GUIMode;
+		int FlightMode = 1;										// Default = Normal flight
+		
+		if (fSupercruise) 					FlightMode = 2;		// Supercruise 
+
+		// Special cases...
+		GUIMode = stfnProcessGuiFocus();						// Get current GUIMode
+		if (GUIMode == GUI_FSSMode)		 	FlightMode = 0;		// FSSMode = ON
+		if (GUIMode == GUI_SAAMode)			FlightMode = 2;		// DSSMode = ON
+		
+		fnSetSliderCurve(FlightMode);	
+	}
+
+
+	// FUNCTION:	Increase LED Brightness
+	// Parameter:	x = INCREASE, DECREASE, NOCHANGE (Default)
+	
+	int fnLEDBrightness(int x = NOCHANGE) {
+		if (x == INCREASE) {
+			LEDLevel = LEDLevel + 1;
+			if (LEDLevel > 5) LEDLevel = 0;								// Wraps around to 0 if > 5
+		}
+		if (x == DECREASE) {
+			LEDLevel = LEDLevel - 1;
+			if (LEDLevel < 0) LEDLevel = 5;								// Wraps around to 5 if < 0
+		}
+		SetLED = (42*LEDLevel)+LEDLevel;
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_INTENSITY, SetLED));		// Set LED brightness to selected level
+		if (!StartupLock) {
+			printf("LED Brightness [Level %d]:	%d\x0a", LEDLevel, SetLED);
+		}
+	}
+	
+	
+	// FUNCTION:	Flashes status LED when toggled
+	// Parameter:	"LEDx" where x = 1 - 5
+
+	int fnFlashLED(int x) {																				// Flashes LED# (parsed as parameter when calling) odd number of times.
+		int counter = 0;
+		if (FlashLEDs) {
+			while (counter < 11) {																		// Odd number TOGGLES LED.
+				DeferCall(counter*100, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^x));	// Loop effectively issues 'counter' DeferCalls at ~100 mSec apart
+				counter = counter + 1;
+			}
+		}
+		else {
+			ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^x));								// No Flash, just toggle the LED on or off
+		}
+	}
+
+
+	// FUNCTION: Sets Status LEDs according to state flags
+	// Parameter: dummy ... required so we can use defercall which must have a parameter parsed 
+	
+	int fnSetLEDs(int dummy=NUL) {
+	
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT+LED0)); 		// set GLOBAL LED ON, then...
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED1)); 		// set LED 1 OFF
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED2)); 		// set LED 2 OFF
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED3)); 		// set LED 3 OFF
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED4)); 		// set LED 4 OFF
+		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED5)); 		// set LED 5 OFF
+
+		if (Flags != 0) {
+			if (fFAOff) {
+				fnFlashLED(LED1);												// [Flight Assist]		LED ON = FA-OFF
+			}
+			if (fLights) {
+				fnFlashLED(LED2);												// [Ship Lights]		LED ON = Lights ON
+			}
+			if (fSilentRunning) {
+				fnFlashLED(LED3);												// [Silent Running]		LED ON = Silent Running active
+			}
+			if (fCargoScoop) {
+				fnFlashLED(LED4);												// [Cargo Scoop]		LED ON = Cargo Scoop deployed
+			}
+			if (fLandingGear) {
+				fnFlashLED(LED5);												// [Landing Gear]		LED ON = Landing Gear deployed
+			}
+		}
+	}
+
+
+	// FUNCTION: Flashes all LEDs on Throttle to signify game has loaded
+
+	int fnFlashStart() {
+		int i = 0;
+		
+		if (FlashLEDs) {
+			while (i < 5) {
+				DeferCall(200*i, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^LED0));
+				DeferCall((200*i)+100, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^LED0));
+				i = i + 1;
+			}
+		}
+	}
+
+
+	// FUNCTION: 	Text to Speech using voice.exe
+	// Requires: 	Voice.exe available in path set in ED_UserSettings (VoicePath)
+	//				VoiceCMD must also be set correctly in ED_UserSettings.tmh 
+	// Parameter:	text = string to convert to speech, 
+	//				Optional 'VolumeOverride' to override current volume setting
+	//				Optional 'Voice' to use. DeafaultVoice set in ED_UserSettings. 'Voice' parameter must match a currently installed MS Voice
+	//				See ED_UserSettings file for more information
+
+	// SerialText:	If this global flag is set prior to calling this function, speech commands are processed serially and the script will wait until the call finishes
+	//				This causes a delay in Joystick, Throttle, Pedals and switch processing and will have an in-game inpact
+	//				When set to 0, when this function is called multiple times in quick succession the second and subsequent calls result in speech overlap
+
+	// Usage1:		fnTextToSpeech("This is test number 1");	// says the text at current value of 'VoiceVolume' in %
+	
+	// Usage2:		int VoiceTxt = "This is test number 2";
+	//				fnTextToSpeech(VoiceTxt, 100);				// says the text at 100% volume
+	
+	// Usage3:		char VoiceTxt; Dim(&VoiceTxt, 16); VoiceTxt[0] = 0;
+	//				int tString = "This is test ";
+	//				int test = 3;
+	//				sprintf(&VoiceTxt, "%s number %d", tString, test);
+	//				fnTextToSpeech(&VoiceTxt, 50);				//says the text at 50% volume 
+	
+	// Usage4:		fnTextToSpeech("Test number 4", 0, &David);	//says the text at default volume using "David" voice
+	
+	int fnTextToSpeech(int text, int VolumeOverride=0, int Voice=DefaultVoice) {
+		char volume; Dim (&volume, 4); volume[0] = NUL;
+		char SysCmd; Dim(&SysCmd, 255); SysCmd[0] = NUL;			// Increase buffersize if required
+
+		if (VolumeOverride > 0) {
+			sprintf(&volume, "%d", VolumeOverride);
+		}
+		else {
+			sprintf(&volume, "%d", VoiceVolume);
+		}
+		volume[3] = NUL;											// terminate char array 
+		if (EnableVoice) {
+			if (!GameLoaded) {	
+				SerialText = 1;
+			}
+			if (SerialText) {										// sends external command to Windows then waits until finished before exeecuting next line in script
+				sprintf(&SysCmd, "%s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);				
+			}
+			else {													// Parallel - send text to voice then immediately process next line in script. No waiting
+				sprintf(&SysCmd, "start %s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);
+			}
+			SysCmd[strlen(&SysCmd)] = NUL;							// terminate char array with nul
+
+			system(&SysCmd);										// send command to Windows
+			SerialText = 0;											// Reset SerialText flag
+		}
+	}
+
+
+	// FUNCTION:	Volume Controller for 'voice' exe / fnTextToSpeech()
+	// Parameter:	x = DECREASE or INCREASE
+	
+	int fnVoiceVolume(int x) {
+
+		char vol;													// for text value of VoiceVolume
+		Dim(&vol, 4);
+		vol[0] = NUL;
+		
+		char c;														// for our VoiceTxt string to send to fnTextToSpeech()
+		Dim(&c, 50);
+		c[0] = NUL;
+		
+		int VolTxt;
+			
+		if (x == INCREASE) {										// INCREASE Volume
+			VoiceVolume = VoiceVolume + 10;
+			
+			if (VoiceVolume > 100) {								// Test for MAX volume
+				VoiceVolume = 100;
+				VolTxt = "at maximum,";
+			}
+			else {
+				VolTxt = "Increased to";
+			}
+		}
+		else {														// DECREASE Volume
+			VoiceVolume = VoiceVolume - 10;						
+			
+			if (VoiceVolume < 5) {									// Test for MIN volume 
+				VoiceVolume = 5;
+				VolTxt = "at minimum,";
+			}
+			else {
+				VolTxt = "Decreased to";
+			}
+		}
+		sprintf(&c, "Voice volume %s %d percent", VolTxt, VoiceVolume);
+		c[strlen(&c)] = NUL;											// Terminate char array
+		fnVPOutput(&c);
+	}
+
+
+	// FUNCTION:	Play WAV file sound effects
+	// Parameter:	wavfile = Name of wav file to be played. '.wav' is optional
+	//				vol = volume% (some wav files are much quieter than others), default = 100%
+	//				loops = times to play sound, default = 1
+	// Requires:	SoundPath alias to be correctly set in usersettings file
+	//				WAVPath alias to be correct set in usersettings file
+	//				<wavfile>.wav to exist inside WAVPath
+	//
+	// Optional:	SoundCMD alias set in usersettings for additional command line arguments
+	//
+	// Example:		fnSoundFX("wding", 75, 5);	// will play 'wding.wav' at 75% volume 5 times
+	//				fnSoundFX("tada");			// will play 'tada.wav' at 100% volume once
+	
+	int fnSoundFX(int wavfile, int vol=100, int loops=1) {
+
+		char SysCmd; Dim(&SysCmd, 255);	SysCmd[0] = NUL;			// Increase buffer size if required
+		
+		if (EnableSoundFX) {
+			
+			sprintf(&SysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
+			SysCmd[strlen(&SysCmd)] = NUL;							// terminate char array 
+
+			system(&SysCmd);										// send command to Windows			
+		}
+	}
+
+
+	// FUNCTION:	Announce Game Start and initialise script and controller
+	
+	int fnGameStarted() {
+
+		int VA = "0";
+		int VAStatus = "";
+		int VoiceStatus = "";
+		int SoundFXStatus = "";
+		
+		printf("\x0a  !!! GAME STARTED @ %s !!!\x0a\x0a", fnGetTOD());
+		
+		GameLoaded = YES;
+		StartupLock = OFF;
+
+		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, THR_FC);			// Forces re-read of slider axis								
+		
+		fnFlashStart();													// Flash LEDs on Throttle Base to alert user game has started
+		
+		if (Throttle[EACON] | Throttle[RDRNRM] | Throttle[SPDF]) {
+			// Align toggle switches and internal status flags if required
+			if (Throttle[EACON])	DeferCall(1000, &tgSilentRunning,	ON);		//MAYBE NOT NEEDED if moved to stfnProcessFlags() like CargoScoop code	
+//			if (Throttle[RDRNRM])	DeferCall(1750, &tgCargoScoop,		DEPLOY);	//MAYBE NOT NEEDED now checked in stfnProcessFlags()	
+			if (Throttle[SPDF])		DeferCall(2500, &tgReverseThrust,	OFF);       //Cannot avoid this one as there is no FLAGS bit for this
+		}
+		else DeferCall(1100, &fnSetLEDs, NUL);
+	
+		// Align Joystick curves
+		if (Throttle[APPAT])	fnSetCurves(MILD, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		if (Throttle[APAH])		fnSetCurves(NONE, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		if (Throttle[APALT])	fnSetCurves(SLOW, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		
+		if (fDocked) 			InHanger = YES;
+		
+		if (!ConnectionStatus) {
+			ActKey(PULSE+KEYON+ShowConnectionStatus);					// ...turn on connection status. Alternate="m_ShowGameStats"
+			ConnectionStatus = ON;										// tracks if above has already been turned on
+		}
+		
+		if (CommsModule) {
+			if (CommsInitialised == NO) {
+				initCommsChannels();									// Initialise Voice Communications 
+				CommsInitialised = YES;
+			}
+		}
+		else {
+			printf("\x0a\- ED_CommsControl.tmh not loaded -\x0a\x0a");
+		}
+		
+		if(EnableVoice) {
+			VoiceStatus = "Enabled";
+		}
+		else {
+			VoiceStatus = "Disabled";
+		}
+		printf("VoiceStatus	= %s\x0a", VoiceStatus);
+		printf("VoiceVolume	= %d\x0a", VoiceVolume);
+		
+		if(EnableSoundFX) {
+			SoundFXStatus = "Enabled";
+		}
+		else {
+			SoundFXStatus = "Disabled";
+		}
+		printf("\x0a\SoundFXStatus = %s\x0a", SoundFXStatus);
+
+		SerialText = 1;
+		fnTextToSpeech("Welcome back Commander");
+		
+		Flags2 = stfnGetKeyValue("Flags2", INTEGER);					// Check if running Odyssey or Horizons
+		if (Flags2 == -1) {												// That is, keyname not found 
+			Odyssey = 0;												// Therefore, Odyssey is not running 
+			printf("\x0a\GAME:		HORIZONS\x0a");
+			SerialText = 1;
+			DeferCall(3000, &fnTextToSpeech, "Running Horizons");
+		}
+		else {
+			Odyssey = 1;
+			printf("\x0a\GAME:		ODYSSEY\x0a");
+			SerialText = 1;
+			DeferCall(3000, &fnTextToSpeech, "Running Odyssey");			
+		}
+						
+		fnPrintState();
+		printf("\x0a\Script running....waiting for input...\x0a\x0a");
+
+		MainKeyMap();													// MapKey profile for 'Game Running'
+		
+		if (SwapRoll4Yaw) {
+			DeferCall(1500, &tgXAxis, 0);								// Give 'MainKeyMap()' call a chance to finish
+		}				
+	}
+
+
+	// FUNCTION:	Sets PIP profiles
+	// Parameter:	0 = Reset PIPMode to default. 1 = Increment PIPMode, 2 = Decrement PIPMode
+
+	int fnPIPMode(int x) {
+
+		int VoiceTxt;
+		
+		if (x == NOCHANGE) {
+			PIPMode = DefaultPIPMode;			// Set in ED_UserSettings.tmh
+		}
+		if (x == INCREASE) {
+			PIPMode = PIPMode + 1;
+			if (PIPMode > 5) PIPMode = 0;		// Test and wrap around to 0 if > 5
+		}
+		if (x == DECREASE) {
+			PIPMode = PIPMode - 1;
+			if (PIPMode < 0) PIPMode = 5;		// Test and wrap around to 5 if < 0
+		}
+		
+		if (PIPMode == 0) {
+			PIPTxt = "Single	";
+			VoiceTxt = "Pipmode 0 Single";
+		}
+		if (PIPMode == 1) {										
+			PIPTxt = "Double	";
+			VoiceTxt = "Pipmode 1 Double";
+		}
+		if (PIPMode == 2) {
+			PIPTxt = "Attack	";
+			VoiceTxt = "Pipmode 2 Attack";
+		}
+		if (PIPMode == 3) {
+			PIPTxt = "Defend	";
+			VoiceTxt = "Pipmode 3 Defend";
+		}
+		if (PIPMode == 4) {
+			PIPTxt = "Recharge";
+			VoiceTxt = "Pipmode 4 Recharge";
+		}
+		if (PIPMode == 5) {
+			PIPTxt = "GP 3+3	";
+			VoiceTxt = "Pipmode 5 3+3";
+		}
+		if (StartupLock == OFF) {
+			fnTextToSpeech(VoiceTxt);
+			printf("PIPMode(%d):		%s	>>\x0a", PIPMode, PIPTxt);
+		}
+	}
+
+
+	// FUNCTION:	Determines PIP Profile, constructs and parses PIPMapper parameters
+	// Parameters:	Main PIP Power assignment. Valid arguments are 'SYS', 'ENG' or 'WEP'
+	//				'BAL' is handled directly via pulse statement in KeyMap for H3D
+	
+	int fnPIPManager(int PwrPriority) {
+		if (PIPMode == 0) {		// Single PIP 
+			if (PwrPriority == SYS) ActKey(PULSE+KEYON+PowerSys);
+			if (PwrPriority == ENG) ActKey(PULSE+KEYON+PowerEng);
+			if (PwrPriority == WEP) ActKey(PULSE+KEYON+PowerWep);
+		}
+		if (PIPMode == 1) {		// Double PIP 
+			if (PwrPriority == SYS) ActKey(KEYON+CHAIN(PULSE+PowerSys, D(), PULSE+PowerSys));
+			if (PwrPriority == ENG) ActKey(KEYON+CHAIN(PULSE+PowerEng, D(), PULSE+PowerEng));
+			if (PwrPriority == WEP) ActKey(KEYON+CHAIN(PULSE+PowerWep, D(), PULSE+PowerWep));
+		}
+		if (PIPMode == 2) {		// Attack: 4+2 (ENG/WEP)
+			if (PwrPriority == SYS) fnPIPMapper(SYS,WEP);			// [4,0,2]
+			if (PwrPriority == ENG) fnPIPMapper(ENG,WEP);			// [0,4,2]
+			if (PwrPriority == WEP) fnPIPMapper(WEP,ENG);			// [0,2,4]
+		}
+		if (PIPMode == 3) {		// Defend: 4+2 (SYS/ENG)
+			if (PwrPriority == SYS) fnPIPMapper(SYS,ENG);			// [4,2,0]
+			if (PwrPriority == ENG) fnPIPMapper(ENG,SYS);			// [2,4,0]
+			if (PwrPriority == WEP) fnPIPMapper(WEP,SYS);			// [2,0,4]
+		}
+		if (PIPMode == 4) {		// Recharge: 4+1+1
+			if (PwrPriority == SYS) fnPIPMapper(SYS);				// [4,1,1]
+			if (PwrPriority == ENG) fnPIPMapper(ENG);				// [1,4,1]
+			if (PwrPriority == WEP) fnPIPMapper(WEP);				// [1,1,4]
+		}
+		if (PIPMode == 5) {		// General Purpose 3+3
+			if (PwrPriority == SYS) fnPIPMapper(SYS,ENG,MID);		// [3,3,0]
+			if (PwrPriority == ENG) fnPIPMapper(ENG,WEP,MID);		// [0,3,3]
+			if (PwrPriority == WEP) fnPIPMapper(WEP,SYS,MID);		// [3,0,3]
+		}		
+	}
+
+
+	// FUNCTION: Sets Auto-PIP Mapping & then Sends Keystrokes.
+	// Parameters:  (Max, Min, Bal). Valid = SYS, ENG, WEP, MID (refer EDGlabalVars.tmh)
+
+	int fnPIPMapper(int maxPIPx=0, int minPIPy=0, int balPIPz=0) {
+		int PIPx, PIPy, PIPz;
+
+		if		(maxPIPx == 0) 	 PIPx = 0;														// maxPIPx gets 4 PIPs (balanced 1 PIP on others if no 2nd parameter set)
+		else if (maxPIPx == SYS) PIPx = PULSE+PowerSys;
+		else if (maxPIPx == ENG) PIPx = PULSE+PowerEng;
+		else if (maxPIPx == WEP) PIPx = PULSE+PowerWep;
+
+		if 		(minPIPy == 0)	 PIPy = 0;														// minPIPy gets 2 PIPs
+		else if (minPIPy == SYS) PIPy = PULSE+PowerSys;
+		else if (minPIPy == ENG) PIPy = PULSE+PowerEng;
+		else if (minPIPy == WEP) PIPy = PULSE+PowerWep;
+
+		if 		(balPIPz == 0)	 PIPz = 0;														// balPIPz overrides minPIPy and sets 3 PIPs each 'balanced' for max & min PIPs
+		else if (balPIPz == MID) PIPz = PIPy;
+
+		if(StartupLock == OFF) {
+			ActKey(KEYON+CHAIN(																	// MACRO: Send PIP Configuration
+				PULSE+BalancePower, D(),														// If NO other parameters set, only Balance Power
+				PIPx, D(),
+				PIPy, D(),
+				PIPx, D(),
+				PIPx, D(),
+				PIPz));
+		}
+	}
+
+
+	// FUNCTION:	Perform Primary and Secondary trigger actions
+	// Parameter:	x = 0 (Primary Normal), x = 1 (Primary shifted), x = 2 (Secondary Normal), x = 3 (Secondary shifted)
+	// Requires:	'FireModeP' and 'FireModeS' to be set to 0 (Disco Scanner), or 1 (press2fire/press2stop)
+
+	// Global Variables for fnAdvFireControl() function
+	// Note:		We need to use 'TriggerState' flags as we cannot use a SEQ() statement in an EXEC'd call
+	
+	int TriggerStateP = 0;
+	int TriggerStateS = 0;
+
+	// ------------------------------------------------
+	
+	int fnAdvFireControl(int x) {
+
+		// Primary Trigger Action
+		if (x == 0) {
+			ActKey(KEYON+PrimaryFire);													// Normal press to fire, release to stop firing
+		}
+		if (x == 1) {
+			if (fSupercruise & FireModeP) {
+				tgTriggerMode(1);
+			}
+			if (FireModeP == 0) {
+				ActKey(KEYON+PrimaryFire);	 											// Press to fire...
+				DeferCall(DiscoDelay, &ActKey, PrimaryFire);							// Release automatically after 6.1 seconds
+			}
+			if (FireModeP == 1) {
+				if (!TriggerStateP) {
+					ActKey(KEYON+DOWN+PrimaryFire);										// Press to fire...
+				}
+				else {
+					ActKey(KEYON+UP+PrimaryFire);										// Press to stop firing
+				}
+				TriggerStateP = !TriggerStateP;				
+			}
+			if (FireModeP == 2) {
+				if (!TriggerStateP) {
+					AutoRepeat(hPWSprimary, 7000, &ActKey, PULSE+KEYON+PrimaryFire);	// Pulse Wave Scanner. Press 'fire' every 7 seconds 
+				}
+				else {
+					StopAutoRepeat(hPWSprimary);										// Press to stop PWS
+				}
+				TriggerStateP = !TriggerStateP;								
+			}
+		}
+		
+		// Secondary Trigger Action
+		if (x == 2) {
+			ActKey(KEYON+SecondaryFire);												// Normal press to fire, release to stop firing
+		}
+		if (x == 3) {
+			if (fSupercruise & FireModeS) {
+				tgTriggerMode(2);
+			}
+			if (FireModeS == 0) {
+				ActKey(KEYON+SecondaryFire); 											// Press to fire...
+				DeferCall(DiscoDelay, &ActKey, SecondaryFire);							// Release automatically after 6.1 seconds
+			}
+			if (FireModeS == 1) {
+				if (!TriggerStateS) {
+					ActKey(KEYON+DOWN+SecondaryFire);									// Press to fire...
+				}
+				else {
+					ActKey(KEYON+UP+SecondaryFire);										// Press to stop firing
+				}
+				TriggerStateS = !TriggerStateS;
+			}
+			if (FireModeS == 2) {
+				if (!TriggerStateS) {
+					AutoRepeat(hPWSsecondary, 7000, &ActKey, PULSE+KEYON+SecondaryFire);// Pulse Wave Scanner
+				}
+				else {
+					StopAutoRepeat(hPWSsecondary);										// Press to stop PWS
+				}
+				TriggerStateS = !TriggerStateS;			
+			}		
+		}
+	}
+
+
+	// FUNCTION:	Normal flight: 		Fire Shield Cell Bank or two and followup with a heatsink
+	//				Supercruise+FSS:	Zoom Function for FSS
+	//				Camera Mode:		Zoom IN function
+	// Parameter:	x = 0 (1xSCB, 0xHS), 1 (1xSCB, 1xHS) or 2 (2xSCB, 1xHS)
+
+	int fnAdvancedSCB(int x) {
+		if (!fSupercruise & fMainShip) {
+			if (x == 0) {
+				ActKey(PULSE+KEYON+UseShieldCell);
+				printf("!!!    SCB  Fired    !!!\x0a");
+			}
+			if (x == 1) {
+				ActKey(PULSE+KEYON+UseShieldCell);
+				printf("!!!    SCB  Fired    !!!\x0a");
+				DeferCall(250, &ActKey, PULSE+KEYON+DeployHeatSink);
+				printf("!!!  Heatsink Fired  !!!\x0a");
+			}
+			if (x == 2) {
+				ActKey(PULSE+KEYON+UseShieldCell);
+				printf("!!!    SCB  Fired    !!!\x0a");
+				DeferCall(250, &ActKey, PULSE+KEYON+DeployHeatSink);
+				printf("!!!  Heatsink Fired  !!!\x0a");
+				DeferCall(3000, &ActKey, PULSE+KEYON+UseShieldCell);
+				printf("!!!    SCB  Fired    !!!\x0a");
+			}		
+		}
+		else {
+			if(FSSMode) {
+				ActKey(PULSE+KEYON+FSSZoomIN);
+				printf("FSS Zoom:	IN\x0a");					
+			}
+		}
+	}
+
+
+	// FUNCTION: Deploy Heatsink / FSS Zoom
+	
+	int fnHeatsink() {
+		if (fMainShip) {
+			if(FSSMode) {
+				ActKey(PULSE+KEYON+FSSZoomOUT);
+				printf("FSS Zoom:	OUT\x0a");
+			}
+			else {
+				ActKey(PULSE+KEYON+DeployHeatSink);
+				printf("!!!  Heatsink Fired  !!!\x0a");
+			}
+		}
+	}
+
+
+	// FUNCTION: Deploy Chaff
+	
+	int fnChaff() {
+		int fnName = "Chaff";
+		int reason;
+		
+		if(!fSupercruise) {
+			ActKey(PULSE+KEYON+FireChaff);
+			printf("!!!   Chaff  Fired   !!!\x0a");
+		}
+		else {
+			reason = "we are in supercruise";
+			fnNotValid(fnName, reason);
+		}
+	}
+
+
+	// FUNCTION: Deploy/Recover SRV. Set Slider Curve and Lights flag.
+	// Parameter: 0 = Deploy SRV, 1 = Board ship
+
+	int fnDeploySRV(int x) {
+		int fnName;
+		int reason;
+
+		if (!StartupLock) {
+			if (x == DEPLOY) {
+				fnName = "Deploy SRV";
+				if (!fSRV) {				
+					if (fLanded & fMainShip) {									// DEPLOY
+						ActKey(PULSE+KEYON+m_DeploySRV);
+						printf("SRV:				DEPLOYED	>>\x0a");
+					}
+					else {
+						reason = "we are not landed";
+						fnNotValid(fnName, reason);
+					}
+				}
+				else {
+					fnVPOutput("SRV already Deployed");				
+				}
+			}
+			else {																// RECOVER
+				fnName = "Recover SRV";
+				if (fSRV & fSRVTurretRetracted) {	
+					ActKey(PULSE+KEYON+m_BoardShip);
+					printf("SRV:				RECOVERED	<<\x0a");
+					DeferCall(14000, &fnPIPMapper, SYS);						// PIPs to Shields 
+				}
+				else {
+					if (!fSRV) {
+						reason = "not in SRV";
+					}
+					if (!fSRVTurretRetracted) {
+						reason = "turret not retracted";
+					}
+					fnNotValid(fnName, reason);
+				}
+			}
+		}
+	}
+	
+	
+	// FUNCTION: 	Dismiss/Recall Ship
+	
+	int fnDRShip() {
+		int fnName = "Dismiss or Recall Ship";
+		int reason;
+		int VoiceTxt;
+		
+		if(fSRV | fOnFoot) {
+			if(ShipDismissed) {
+				VoiceTxt = "Ship recalled";
+			}
+			else {
+				VoiceTxt = "Ship dismissed";
+			}
+			ActKey(PULSE+KEYON+SRVRecallDismissShip);
+			
+			printf("Ship Status: ");
+			fnVPOutput(VoiceTxt);
+			
+			ShipDismissed = !ShipDismissed;
+			stfnMyStates(SAVE);													// saves my status variables 			
+		}
+		else {
+			reason = "we are not in the S R V or on foot";
+			fnNotValid(fnName, reason);
+		}			
+	}
+
+
+	// FUNCTION: Calls Request Dock macro. Set power to shields
+
+	int fnRequestDock() {
+		int fnName = "Docking request";
+		int reason;
+		if (!fSupercruise) {
+			ActKey(PULSE+KEYON+m_RequestDock);
+			fnPIPMapper(SYS,ENG);
+			if (AutoGearDOWN & !fLandingGear) {
+				ActKey(PULSE+KEYON+LandingGear);
+			}
+			printf("\x0a=	Docking request sent	=\x0a");
+			printf("=	    Power to shields	=\x0a\x0a");
+		}
+		else {
+			reason = "we are in no position to request docking";
+			fnNotValid(fnName, reason);
+		}
+	}
+
+
+	// FUNCTION: Enter/Exit Hanger
+	// Parameter: x = EXIT, ENTER
+	
+	int fnHangerServices(int x) {
+		int fnName = "Hanger Services";
+		int GUIMode;
+		int reason;
+		int VoiceTxt;
+		
+		if (GameLoaded) {
+			if(fDocked) {
+				if(x == ENTER) {	
+					if(!InHanger) {
+						VoiceTxt = "Enter Hanger and Station Services";
+						fnVPOutput(VoiceTxt, VoiceVolume-15);
+						fnPIPMapper();
+						ActKey(PULSE+KEYON+m_EnterHanger);
+						InHanger = YES;
+					}
+				}
+				else {				
+					fnName = "Launch Sequence";
+					GUIMode = stfnProcessGuiFocus();
+					if(GUIMode == GUI_StationSvcs) {
+						reason = "Exit Station services";
+						fnNotValid(fnName, reason);
+					}
+					else {	
+						VoiceTxt = "Initiating launch sequence";
+						fnVPOutput(VoiceTxt);
+						ActKey(PULSE+KEYON+m_Launch);
+						InHanger = NO;
+					}
+				}
+			}
+			else {
+				reason = "You are not docked at a station services facility";
+				fnNotValid(fnName, reason);
+			}
+		}
+	}
+
+
+	// FUNCTION:	If in Ship Enter Hanger/Lift Off Macros
+	//				if in SRV apply/release handbrake
+	// Parameter:	x = ENTER (Hanger Services), EXIT (Lift off) 
+
+	int fnIdleLock(int x) {
+		int VoiceTxt;
+		int fName = "Idle Lock";
+		
+		if (fMainShip) {
+			fnHangerServices(x);
+		}
+		else if (fSRV) {
+			if (fSRVHandbrake) {
+				VoiceTxt = "Handbrake:	OFF";
+			}
+			else {
+				VoiceTxt = "Handbrake:	ON";
+			}
+			fnVPOutput(VoiceTxt);
+			ActKey(PULSE+KEYON+SRVHandbrake);		// Toggle SRV Handbrake
+		}
+		else {
+			fnNotValid(fName);		
+		}
+	}
+
+
+	// FUNCTION:	Checks FSD starts spooling up after hitting FSD
+	// CALLED FROM:	tgWarpDrive() as AutoRepeat so can be cancelled by StopAutoRepeat(hFSDCharge)
+	// PARAMETER:	EngineText - Supercruise or Warpdrive selection 
+	// NOTE:		FSD may not spool up for several reasons. Obscured Target, Insufficient fuel/Target too far etc
+
+	// GLOBAL VARIABLES
+	
+	int chkcounter = 0;
+	
+	int fnCheckFSDCharge(int EngineText) {
+		int reason;
+		
+		chkcounter = chkcounter + 1;
+		
+		if(fFSDCharging == 0) {
+			if(chkcounter > 6) {
+				reason = "FSD charge failed";
+				fnNotValid(EngineText, reason);
+				printf("%s:	DISENGAGED	<<\x0a", EngineText);
+				chkcounter = 0;
+				StopAutoRepeat(hFSDCharge);				// Stop AutoRepeat once threshold has been breached
+				InitWarpDrive = DISABLED;
+			}
+		}
+		else {											// FSD Charging is detected so ...
+			chkcounter = 0;								// ... reset the counter ...
+			StopAutoRepeat(hFSDCharge);					// ... Stop this function loop 
+			InitWarpDrive = DISABLED;					// ... Reset InitWarpDrive 
+		}
+	}
+
+
+	// FUNCTION:	Checks we've cleared MassLock for 2 seconds
+	// CALLED FROM:	tgWarpDrive() as AutoRepeat so this call can be cancelled
+	// PARAMETER:	EngineText - Supercruise or Warpdrive selection 
+	// NOTE:		Check every 0.5 sec and punch FSD if cleared
+
+	// GLOBAL VARIABLES
+	
+	int MLCount = 0;
+	
+	int fnCheckFSDMasslocked(int EngineText) {
+		int reason;
+		
+		MLCount = MLCount + 1;
+		
+		if(fMassLocked) {
+			printf("%s	MASSLOCKED	... Retry #%d of 4\x0a", EngineText, MLCount);
+			if(MLCount >= 4) {
+				reason = "we are currently masslocked";
+				fnNotValid(EngineText, reason);
+				printf("%s:	DISENGAGED	<<\x0a", EngineText);
+				MLCount = 0;
+				StopAutoRepeat(hMassLocked);				// Stop AutoRepeat that called this function
+				InitWarpDrive = DISABLED;
+			}
+		}
+		else {
+			MLCount = 0;
+			StopAutoRepeat(hMassLocked);
+			InitWarpDrive = DISABLED;
+			tgWarpDrive(EngineText); 
+		}
+	}
+
+
+	// FUNCTION:	Clears the chat boxes
+	// Parameter:	'mode'. Valid = 0 or 1
+	//				mode 0 clears current selected chatbox. mode 1 clears all chatbaxes
+	
+	int fnClearChatBox(int mode = 0) {
+		int loop = 1;
+		
+		if (mode == 1) {
+			loop = ChatTABs;									// Set in ED_UserSettings.tmh
+		}		
+			
+		ActKey(PULSE+KEYON+										// MACRO: Open chat panel
+			CHAIN(
+				LOCK,
+				PULSE+QuickCommsPanel, D(500),
+				PULSE+QuickCommsPanel, D(500),
+				PULSE+CommsPanel, D(500),
+				PULSE+UILeft, D(),
+				LOCK
+			)
+		);
+		
+		while (loop > 0) {										// MACRO: Send '/clear' command 
+			ActKey(PULSE+KEYON+
+				CHAIN(
+					LOCK,
+					PULSE+QuickCommsPanel, D(),
+					PULSE+'\/', D(),
+					PULSE+'c', D(),
+					PULSE+'l', D(),
+					PULSE+'e', D(),
+					PULSE+'a', D(),
+					PULSE+'r', D(),
+					PULSE+QuickCommsPanel, D(500),
+					LOCK
+				)
+			);
+			if (mode == 1) {									// Send 'left'+'down' when processing more than 1 chatbox 
+				ActKey(PULSE+KEYON+								// MACRO: Select next chat box tab
+					CHAIN(
+						LOCK,
+						PULSE+UILeft, D(),
+						PULSE+UIDown, D(250),
+						LOCK
+					)
+				);					
+			}
+			loop = loop - 1;
+		}
+		ActKey(PULSE+KEYON+CommsPanel);							// Return to default view
+	}
+	
+
+	// FUNCTION:	Menulog
+	// Parameter:	'mode' = 0, 1 or 2
+	// NOTE:		Is not designed for nor should be used to 'Console Log' (CLOG) whilst being attacked
+	
+	// WARNING:		Only works if menu selection is at home position, otherwise unpredicatable result!
+
+	int fnModeSwitch(int mode) {
+	
+		int fName = "Mode Switch";
+		int reason;
+		
+		int GUIMode;
+		int counter = 0;
+		int ReloadDelay;		
+		
+		if (fMainShip) {
+			ReloadDelay = 11;
+		}
+		if (fSRV) {
+			ReloadDelay = 22;
+		}
+		if (fOnFoot){
+			ReloadDelay = 35;			// untested
+		}
+
+		printf("Mode Switch Triggered\x0a");
+
+		if (fDanger | fInterdicted) {		
+			reason = "clogging is not allowed";
+			fnNotValid(fName, reason);
+		}
+		else {
+			if (mode == 0) {
+				fnVPOutput("Mode switch to open selected.. please wait for game reload\x0a");			
+				ActKey(PULSE+KEYON+m_FastModeSwitch0);												// Selects OPEN mode
+			}
+			else if (mode == 1) {
+				fnVPOutput("Mode switch to private group selected.. please wait for game reload\x0a");			
+				ActKey(PULSE+KEYON+m_FastModeSwitch1);												// Selects PRIVATE mode
+			}
+			else {
+				fnVPOutput("Mode switch to solo selected.. please wait for game reload\x0a");			
+				ActKey(PULSE+KEYON+m_FastModeSwitch2);												// Selects SOLO mode
+			}
+
+			if (ReverseThrust == ON) {																// Game always resets Reverse Thrust
+				ReverseThrust = OFF;
+			}
+			
+			while (counter < ReloadDelay) {															// Wait for game to finish reloading
+				printf(".");
+				Sleep(1000);																		// Sleep is ok here as game is not effectively running
+				counter = counter + 1;
+			}
+			
+			printf("\x0a\x0a\- Game has reloaded -\x0a");
+			fnGameStarted();
+		}
+	}
+
+
+	// FUNCTION:	Voice + Print output
+	// Parameter:	VPOutput: string to send to fnTextToSpeech() and printf
+	//				VolumeOverride: integer, 0 = no override, 1 - 100 = Volume. Default Volume = 75
+
+	int fnVPOutput(int VPOutput, int VolumeOverride=0) {
+		printf("%s\x0a", VPOutput);		
+		fnTextToSpeech(VPOutput, VolumeOverride);
+	}
+
+
+//----------------------//
+// REPORT SCRIPT STATES //										// (Optimised Formatting for TARGET GUI)
+//----------------------//
+
+	// FUNCTION: Display header for the status of the macro toggles & user preferences at script start
+
+	int fnPrintState() {
+
+		printf("\x0a");
+		printf("SCRIPT LOADED:	v%d%d%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint);
+		printf("==================================================================================\x0a");
+		printf("USER PREFERENCES: JS-Curves: %s     DX-Slider Curve: %d     PIPMode(%d): %s     LED Level: %d\x0a\x0a", JSCurveSetting, DXCurveSetting, PIPMode, PIPTxt, LEDLevel);
+		fnStateDump();
+	}
+
+	// FUNCTION: Prints state variables to console
+
+	int fnStateDump() {
+
+		// Must declare all local variables outside of any logical tests
+
+		// For Flags/Standard Keys
+		int AL, AR, BL, CR, DA, FA, FM, HB, HD, HI, HM, HP, JT;
+		int LG, ML, NV, PM, RT, SB, SH, SL, SP, SR, TR, TV, WD;
+		float LT, LN;
+
+		// For  Flags2/Odyssey Keys 
+		int Locn1, Locn2, MC, Atmos, O2Lvl, Body1, Body2, Glide, Perspective;
+		float O2, Health, Gravity, Temp;
+		char Weapon;		
+
+		char TimeStamp;
+		Dim(&TimeStamp, 20);
+		TimeStamp[0] = 0;
+
+		stfnGetKeyValue("timestamp", STRING);					     // sets &keyvalue
+		strcat(&TimeStamp, &keyvalue);
+
+		if (Flags != 0) {
+			if (fSilentRunning)			SR = "ON";			else	SR = "OFF";
+			if (fCargoScoop)			CR = "DEPLOYED";	else	CR = "RETRACTED";
+			if (fLandingGear)			LG = "DEPLOYED";	else	LG = "RETRACTED";
+			if (fLights)				SL = "ON";			else	SL = "OFF";
+			if (fNightVision)			NV = "ON";			else	NV = "OFF";
+			if (fHardpoints)			HP = "DEPLOYED";	else	HP = "RETRACTED";
+			if (fFAOff)		 			FA = "OFF"; 		else 	FA = "ON";
+			if (fHUDAnalysis) 			HM = "ANALYSIS";	else 	HM = "COMBAT";
+			if (FSSMode) 				FM = "ON"; 			else 	FM = "OFF";
+			if (ReverseThrust) 			RT = "REVERSE"; 	else	RT = "FORWARD";
+			if (SpeedbrakeDeployed) 	SB = "DEPLOYED";	else	SB = "RETRACTED";
+			if (fSRVTurretRetracted)	TR = "RETRACTED";	else	TR = "DEPLOYED";
+			if (fSRVTurretView)			TV = "TRUE";		else	TV = "FALSE";
+			if (fSRVDriveAssist)		DA = "ON";			else	DA = "OFF";
+			if (fSRVHandbrake)			HB = "ON";			else	HB = "OFF";
+			if (fShieldsUp)				SH = "UP";			else	SH = "DOWN";
+			if (fMassLocked)			ML = "YES";			else	ML = "NO";
+			if (fAltFromAvgRad)			AR = "Radius-ALT";	else	AR = "Radar-ALT";
+
+			if (fLatLong) {
+				LT = stfnGetKeyValue("Latitude", FLOAT);			// get fp value
+				LN = stfnGetKeyValue("Longitude", FLOAT);			// get fp value
+			}
+
+				HD = stfnGetKeyValue("Heading", INTEGER);			// get as integer
+				if(HD == -1) {
+					HD = "N/A";
+				}
+				AL = stfnGetKeyValue("Altitude", INTEGER);			// get as integer
+				if (AL == -1) {
+					AL = "N/A"; 
+				}
+
+			if (!fSupercruise & !fFSDJump) WD = "DISENGAGED";
+			else if (fFSDJump) WD = "Hyperjump";
+			else WD = "Supercruise";
+			
+			printf("\x0aShip System States @ %s       JSON-Timestamp: %s       Flags: %u\x0a", fnGetTOD(), &TimeStamp, Flags);
+			printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
+			if (fMainShip) {
+				SP = "IN SPACE";						// Default, unless...
+				if (fLanded)						SP = "LANDED  ";
+				if (fDocked)						SP = "DOCKED  ";
+				if (!fLanded & !fDocked & fLatLong)	SP = "ORBIT   ";
+
+				printf("MAIN SHIP:	%s	Shields:		%s		Mass Locked:	%s\x0a", SP, SH, ML);
+				if (fLatLong) {
+					printf("Altitude:		%04d		Heading: 	%03d		Lat/Long:	%0.3f, %0.3f\x0a", AL, HD, LT, LN);
+				}
+				printf("HUD Mode:	%s	Ship Lights:	%s		Night Vision:	%s\x0a", HM, SL, NV);
+				printf("Cargo Scoop:	%s	Landing Gear:	%s	Hardpoints:	%s\x0a", CR, LG, HP);
+				printf("FSS Mode:	%s		Supercruise:	%s	Silent Running:	%s\x0a", FM, WD, SR);
+				printf("Flight Assist:	%s		Thrust Vector:	%s	Speed Brake:	%s\x0a", FA, RT, SB);
+			}
+			else if (fSRV) {		
+				if (!fLights) {
+					BL = "OFF";
+				}
+				else {
+					if (fSRVHiBeam) {
+						BL = "HI";
+					}
+					else {
+						BL = "LO";
+					}
+				}
+				
+				printf("SRV:		Heading: %d		Lat/Long:	%0.3f, %0.3f\x0a", HD, LT, LN);
+				printf("Cargo Scoop:	%s		SRV Lights:	%s\x0a", CR, BL);
+				printf("Turret:		%s		Turret View:	%s\x0a", TR, TV);
+				printf("Drive Assist:	%s			Gear Selector:	%s\x0a", DA, RT);
+				printf("Handbrake:	%s			Shields: 		%s\x0a", HB, SH);
+			}
+			else if (fFighter) {
+				printf("FIGHTER:\x0a");
+				printf("Fighter states not yet coded in this version\x0a\x0a");
+			}
+			else {
+				stfnDumpFlags();
+			}
+		}
+		
+		if (Odyssey & Flags2 != 0) {
+		
+			stfnProcessFlags2();			// refresh Flags2 bits or else we'll get unpredictable results below (???)
+
+			Body2 = "Normal";
+			
+			if (fOnFoot)				Locn1 		= "On Foot";	else Locn1 			= "fOnFoot Not Set";
+			if (fInTaxi)				Locn2		= "in Taxi";
+			if (fInMultiCrew)			MC 			= "Multicrew";	else MC 			= "Alone";
+			if (fOnFootInStation)		Locn2		= "in Station";
+			if (fOnFootOnPlanet)		Locn2		= "on Planet";
+			if (fAimDownSight)			Perspective = "Sights"; 	else Perspective	= "Normal";
+			if (fLowOxygen)				O2Lvl 		= "LOW"; 		else O2Lvl 			= "Fine";
+			if (fLowHealth)				Body1 		= "Injured";	else Body1 			= "Healthy";
+			if (fCold)					Body2 		= "Cold";
+			if (fHot)					Body2 		= "Hot";
+			if (fVeryCold)				Body2 		= "Very Cold";
+			if (fVeryHot)				Body2 		= "Very Hot";
+			if (fGlideMode)				Glide 		= "YES"; 		else Glide 			= "NO";
+			if (fOnFootInHanger)		Locn2 		= "in Hanger";
+			if (fOnFootSocialSpace)		Locn2 		= "in Social Space";
+			if (fOnFootExterior)		Locn2 		= "outside";
+			if (fBreathableAtmosphere)	Atmos 		= "Breathable"; else Atmos 			= "Unbreathable";
+			
+			Temp 	= stfnGetKeyValue("Temperature", FLOAT);
+			O2		= stfnGetKeyValue("Oxygen", FLOAT);
+			Health	= stfnGetKeyValue("Health", FLOAT);
+			Gravity	= stfnGetKeyValue("Gravity", FLOAT);
+			
+			stfnGetKeyValue("SelectedWeapon_Localised", STRING);
+			Dim(&Weapon, strlen(&keyvalue)+1);
+			Weapon[0] = 0;
+			strcat(&Weapon, &keyvalue);			
+
+			printf("\x0aPersonal States @ %s       JSON-Timestamp: %s       Flags2: %u\x0a", fnGetTOD(), &TimeStamp, Flags2);
+			printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
+
+			printf("Location:	%s %s\x0a", Locn1, Locn2);
+			if (fLatLong) {
+				printf("Lat/Long:	%0.3f, %0.3f\x0a", LT, LN);
+			}			
+			printf("Atmosphere:	%s	Temp: %0.2f degrees\x0a", Atmos, Temp);
+			printf("Gravity:		%0.2f\x0a", Gravity);
+			printf("Situation:	%s\x0a", MC);
+			printf("Health:		%s,		%0.2f\x0a", Body1, Health);
+			printf("Environment:	%s\x0a", Body2);
+			printf("Oxygen Level:	%s%,		%0.2f\x0a", O2Lvl, O2);
+			printf("Weapon:		%s,	Perspective:	%s\x0a", &Weapon, Perspective);
+		}
+
+		if (strlen(&myJson) > 68) {
+			printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
+		}
+	}
+
+
+	// FUNCTION:	Turn Debug and ShowFlags ON/OFF 
+	// Parameter:	x = 0 - 3. Refer MapKey EFLNORM
+
+	int fnDebug(int x) {
+	
+		if (x == 0) {
+			Debug = DISABLED;
+			ShowFlags = DISABLED;
+			fnVPOutput("Debug OFF");
+		}
+		if (x == 1) {
+			Debug = ENABLED;
+			fnVPOutput("Debug ON");
+		}
+		if (x == 2) {
+			ShowFlags = ENABLED;
+			fnVPOutput("ShowFlags ON");			
+		}
+		if (x == 3) {
+			Debug = ENABLED;
+			ShowFlags = ENABLED;
+			fnVPOutput("Debug and Showflags ON");
+		}	
+	}
+	
+
+	// FUNCTION:	Get Time of Day
+
+	int fnGetTOD() {
+
+		int	TOD	= " NOW ";								// Set type and format
+
+		system("time /T > c:\\tod.txt");				// Create local timestamp
+
+		int fp = fopen("c:\\tod.txt", "r");
+
+		if (fp) {
+			fread(TOD, 1, 5, fp);						// Read local timestamp
+			fclose(fp);
+			return TOD;
+		}	
+	}
+	
+	
+	// FUNCTION:	Get Today's Date
+	
+	int fnGetDate() {
+		char date;
+		Dim(&date, 14);
+		date[0]=0;
+		
+		int today = "00/00";							// Set type and format
+		
+		system("date /T > C:\\today.txt");				// Create local date stamp
+		
+		int fp = fopen("c:\\today.txt", "r");
+		if (fp) {
+			fread(&date, 1, 13, fp);					// Read local date stamp
+			fclose(fp);
+			strsub(today, &date, 4, 8);
+			return today;
+		}	
+	}
+
+
+	//	FUNCTION:	Find substring within a string and return first char position or -1 if not found
+	//	NOTE:		sys.tmh has strstr() listed to provide this functionality, however it seems to always
+	//				return a '0' no matter what you plug in. So, I decided to write my own.
+	
+	int findstr(alias string, alias substring) {
+	
+		int substrlen	= strlen(&substring);
+		int strstart	= 0;
+		int	strend		= strlen(&string) - substrlen;
+		int result;
+		
+		char mystr;
+		Dim(&mystr, substrlen+1);
+		mystr[0]=NUL;
+		
+		while (strstart <= strend) {
+			strsub(&mystr, &string, strstart, strstart+substrlen);
+			mystr[substrlen] = NUL;						// nul terminate char array
+			result = strcmp(&mystr, &substring);			
+			if (result == 0 ) return strstart;
+			strstart = strstart + 1;
+		}
+		return -1;
+	}
+
+
+	// Not used...found in discord provided by Dar|{cyde
+	// Usage example: ModKey(L_ALT, 1);
+	// Note: Potentially better than defining a macro combo-key in ED-Defines.ttm,
+	// as it relaeases 'mod' after 'key' and not before
+	
+	int ModKey(int mod=0, int key=0) { 
+	    return CHAIN(DOWN+mod, D(), PULSE+key, D(), UP+mod);
+	}
+
+
+// END

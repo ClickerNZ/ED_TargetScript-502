@@ -1,0 +1,187 @@
+
+//----------------------------------------------------------------------//
+//	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
+//----------------------------------------------------------------------//
+
+// This file:	ED_Main.tmc 		v5.0.2
+// Supports:	Elite Dangerous 	v4.0.0.1803 (Odyssey)
+// Requires:	TARGET 				v3.0.23.1205_rev1
+//				Joystick firmware	v12
+//				Throttle firmware 	v23
+
+// Refer Change Log.txt in parent folder
+
+// LEGEND: 
+// ========================================================================
+// fnName()								refer to ED_Functions file
+// initName()							refer to ED_Initialise file
+// stfnName()							refer to ED_StateTracker file
+// tgName()								refer to ED_Toggles file
+// mName								refer to ED_Macros file
+// MapKey statements					refer to ED_MapKeyAssignment file
+// Global State and Boolean Defines		refer to ED_ScriptDefines file
+// Global Game Key Bind Defines			refer to ED_GameBindings file 
+// Global Script Variables				refer to ED_GlobalVars file
+// User Config Settings					refer to ED_UserSettings file
+// ========================================================================
+
+// Index:	Line		FUNCTION
+//			Line 62:	include statements
+//			Line 98: 	int main()
+//			Line 183:	int EventHandle()
+
+// PREFACE
+//
+// This script is provided as is and without any warranties, explicit or implied.
+//
+// This package contains a single required '.tmc' file (this is it), a '.ttm' which defines MANY constants and variables used by the rest
+// of the script which is coded within multiple '.tmh' files in order to (hopefully) make the code easier to follow.
+//
+// Also included within the package is a change log to document where I've added features (intended and unintended!) and some sample 
+// Windows batch files to assist in lanching this script, the game itself and any attendant apps you may wish to use at run time.
+//
+// I am not a proffessional coder/programmer, however the philosophy I've chosen for this script package is to try to keep the code
+// within a '.tmh' file relevant to the function title.
+//
+// Indexes near the top of each file should assist in finding functions of interest.
+//
+// This script serves to create additional functionality and immersion within the game as well as serve as a reference on how better to utilise
+// TARGET script beyond what is supplied in the basic scripting guide provided by Thrustmaster.
+//
+// Enjoy.
+//
+// CMDR Clicker
+//
+
+// START
+
+// -------------- //
+// included files //
+// -------------- //
+
+include "target.tmh"
+
+// 'target.tmh' include is mandatory.
+// 		when loaded, target.tmh then includes "defines.tmh" and "hid.tmh"
+// 		when loaded, hid.tmh then includes "sys.tmh"
+//		...this ensures these critical files are loaded in the correct order
+
+//      The above 4x .tmh files are bundled with the TARGET software.
+
+/////////////////////////////////////////////////////////////////////////////
+///                                                                       ///
+///    !!! DO NOT EDIT TARGET.TMH, DEFINES.TMH, SYS.TMH OR HID.TMH !!!    ///
+///                                                                       ///
+///                 unless you know what you are doing                    ///
+///                                                                       ///
+/////////////////////////////////////////////////////////////////////////////
+
+include "ED_ScriptDefines.ttm"			// The order that these files are 'included' matters
+include "ED_GameBindings.ttm"
+include "ED_GlobalVars.tmh"
+include "ED_UserSettings.tmh"
+include "ED_Macros.tmh"
+include "ED_MapKeyAssignment.tmh"
+include "ED_Initialise.tmh"
+include "ED_Functions.tmh"
+include "ED_StateTracker.tmh"
+include "ED_Toggles.tmh"
+
+//include "ED_CommsControl.tmh"			// UNTESTED: ENABLE 'CommsModule' in UserSettings to use CommsControl and...
+										// ... remove the comments in front of the initCommsChannels() call below.
+
+
+// --------------- //
+// program startup //
+// --------------- //
+
+	int main() {
+	
+		printf("\x0a\++	Exclude unwanted controllers	...	");					// Eliminates error messages relating to unfound devices
+																				// Check target.tmh alias list			
+		Exclude(&HCougar);
+		Exclude(&T16000);
+		Exclude(&T16000L);
+		Exclude(&JoystickF18);
+		Exclude(&TWCSThrottle);
+		Exclude(&TFRPHARudder);
+		Exclude(&LMFD);
+		Exclude(&RMFD);
+		Exclude(&A320Pilot);
+		Exclude(&A320Copilot);
+		Exclude(&TCAQuadrant12);
+		Exclude(&TCAQuadrant34);
+		Exclude(&TCAQBoeing12);
+		Exclude(&TCAQBoeing34);
+		Exclude(&TCAYokeBoeing);
+		Exclude(&ViperTQS);
+		Exclude(&ViperBBox);
+		Exclude(&TCASidestickXPilot);
+		Exclude(&TCASidestickXCopilot);
+		Exclude(&FarmStickRight);
+		Exclude(&FarmStickLeft);
+		
+		if (EnableTFRPRudder) {													// (see ED_UserSettings.tmh)
+			Configure(&TFRPRudder, MODE_FILTERED);
+		}
+		else {
+			Exclude(&TFRPRudder);
+		}
+		
+		printf("done	++\x0a\x0a");
+		printf("++	Connect our controllers ... \x0a\x0a");
+		
+		if(Init(&EventHandle)) return 1;
+				
+// ---------------------------------------- //
+// Initialise LEDs, variables and functions //
+// ---------------------------------------- //
+	
+		printf("\x0a\++	Initialise hardware	...	Start	++\x0a"); 
+
+		SetShiftButton(&Joystick, S3, &Throttle, PSF, PSB);						// ** DO NOT TOUCH **  Joystick Nosewheel Switch (S3) = IO, Throttle pinky switch (PSF/PSB) = UMD
+
+		SetKBRate(PulseTime, DelayTime);										// Base Settings 	(See ED_UserSettings.tmh)
+		SetKBLayout(KBLayout);													//					(See ED_ScriptDefines.ttm)
+	
+		fnPIPMode(RESET);														// Reset PIPMode
+
+		stfnMyStates(LOAD);														// Load my status variables
+		
+		fnLEDBrightness();														// Set initial LED Brightness levels
+		initTextToSpeech();														// Initialise Text-To-Speech engine
+		initSoundFX();															// Initialise Sound Effects engine
+		
+		fnCustomCommands();														// Initialise Custom Macros (See ED_Macros.tmh)
+		
+		if (CommsModule == ENABLED) {
+			initCommsChannels();												// Initialise Communications Control
+		}
+		
+
+// -------------------------- //
+// Initialise Flight controls //
+// -------------------------- //
+		
+		initJoystickAxis();
+		initThrottleAxis();														// Includes Throttle "Friction Control" Slider
+		initTFRPRudder();
+
+		printf("\x0a\++	Initialise Hardware	...	Complete	++\x0a");
+
+// -----------------//
+// Check Game State //
+// -----------------//
+
+		printf("\x0a\++	Check Game state ...\x0a");
+		
+		stfnStartCheck();														// Check for vital files and game start
+	}	
+	
+// end of int main()	
+
+	int EventHandle(int type, alias o, int x) {
+		DefaultMapping(&o, x);
+	}
+
+// END
