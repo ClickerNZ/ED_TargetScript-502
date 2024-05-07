@@ -22,16 +22,16 @@
 // ========================================================================
 
 // Index:	Line		FUNCTION
-//			Line 51: 	int stfnReadStatusJson()
-//			Line 140:	int stfnWriteMaxJson()
-//			Line 182: 	int stfnGetKeyValue()
-//			Line 290: 	int stfnProcessFlags()
-//			Line 759:	int stfnProcessFlags2()
-//			Line 1035: 	int stfnProcessGuiFocus()
-//			Line 1060: 	int stfnStartCheck()
-//			Line 1114:	int stfnMyStates()
-//			Line 1261:	int stfnDumpFlags()
-//			Line 1337:	int stfnDumpFlags2()
+//			Line 53: 	int stfnReadStatusJson()
+//			Line 142:	int stfnWriteMaxJson()
+//			Line 183: 	int stfnGetKeyValue()
+//			Line 291: 	int stfnProcessFlags()
+//			Line 816:	int stfnProcessFlags2()
+//			Line 1093: 	int stfnProcessGuiFocus()
+//			Line 1118: 	int stfnStartCheck()
+//			Line 1173:	int stfnMyStates()
+//			Line 1267:	int stfnDumpFlags()
+//			Line 1330:	int stfnDumpFlags2()
 	
 // START
 
@@ -292,7 +292,7 @@
 
 		int VoiceTxt;
 		
-		// "lFlagName" is "Last or previous flag value 					// Allows us to track each time a flag is toggled 
+		// "lFlagName" is "Last" or previous flag value					// Allows us to track each time a flag is toggled 
 		int lDocked 			= fDocked;								// Track when we dock in station or star port
 		int lLanded 			= fLanded;								// Track when landed
 		int lLandingGear 		= fLandingGear;							// LED 5 Tracking
@@ -434,7 +434,7 @@
 				}
 			}
 
-			if (fMainShip & (fLanded != lLanded)) {							// Framework for future functionality							
+			if (fMainShip & (fLanded != lLanded)) {						// Framework for future functionality							
 				if (fLanded) {
 					printf("Landed @ %s\x0a", fnGetTOD());
 				}
@@ -470,14 +470,10 @@
 
 			if (fMainShip & (fSupercruise != lSupercruise)) {								// Detect when Supercruise toggles
 				if(fSupercruise) {
-//					if(Debug) {
-						printf("Supercruise flag set\x0a");
-//					}
+					printf("Supercruise flag set\x0a");
 				}
 				else {
-//					if(Debug) {
-						printf("Supercruise flag reset\x0a");
-//					}
+					printf("Supercruise flag reset\x0a");
 					if (SelectDrop == NO) {													// Uninitiated drop				
 						if (OrbitalCruise & !fInterdicted) {
 							VoiceTxt = "Entering Glide Mode";
@@ -487,7 +483,6 @@
 						}
 						fnVPOutput(VoiceTxt);												//  Announce drop type
 						if (fInterdicted | fDanger) {
-//							printf("!!! DANGER DETECTED !!!\x0a");							// Handled during fDanger flag detection below
 							if (fHUDAnalysis) {	
 								tgHUDMode();												// Select Combat HUD
 							}
@@ -556,20 +551,18 @@
 
 			if (fCargoScoop != lCargoScoop) {					
 				if(fCargoScoop) {
-					printf("Cargo scoop:	DEPLOYED\x0a");					// Vocalised in game
+					printf("Cargo scoop:	DEPLOYED\x0a");				// Vocalised in game
 				}
 				else {
 					printf("Cargo scoop:	RETRACTED\x0a");
 				}
 			}
 
-			// Check and align switch with function
+			// Check and align switch with function - TESTING
 			if (Throttle[RDRNRM] & !fCargoScoop & ((fMainShip | fSRV) & !fSupercruise)) {
-				//tgCargoScoop(DEPLOY);
 				ActKey(PULSE+KEYON+CargoScoop);
 			}
 			if (Throttle[RDRDIS] & fCargoScoop & ((fMainShip | fSRV) & !fSupercruise)) {
-				//tgCargoScoop(RETRACT);
 				ActKey(PULSE+KEYON+CargoScoop);
 			}
 
@@ -582,13 +575,13 @@
 				}
 			}
 
-			// Check and align switch with function
+			// Check and align switch with function - TESTING 
 			if (Throttle[EACON] & !fSilentRunning & (fMainShip & !fSupercruise & !fLanded & !fDocked)) {
 				ActKey(PULSE+KEYON+SilentRunning);
 			}
 			if (Throttle[EACOFF] & fSilentRunning & (fMainShip & !fSupercruise & !fLanded & !fDocked)) {
 				ActKey(PULSE+KEYON+SilentRunning);
-			}			
+			}
 
 			if (fFuelScoop != lFuelScoop) {
 				if (fFuelScoop) {
@@ -608,9 +601,9 @@
 				}				
 			}
 
-			if (fSRVTurretView != lSRVTurretView) {
+			if (fSRVTurretView != lSRVTurretView) {							// CHECK THIS
 				if (fSRVTurretView) {
-//					printf("ENTER - SRV Turret View\x0a");   // handled in tgHardpoints 
+//					printf("ENTER - SRV Turret View\x0a");   				// handled in tgHardpoints 
 				}
 				else {
 //					printf("EXIT - SRV Turret View\x0a");				
@@ -650,7 +643,7 @@
 					printf("FSD begin charging\x0a");
 				}
 				else {
-					//
+					// do nothing
 				}				
 			}
 
@@ -777,14 +770,10 @@
 
 			if (fFSDJump != lFSDJump) {										// Detect when Supercruise or Hyperjump has been toggled
 				if (!fFSDJump) {											// Detect when FSD Jump flag gets reset
-//					if (Debug) {
-						printf("FSD Jump flag reset\x0a");
-//					}
+					printf("FSD Jump flag reset\x0a");
 				}
 				else {														// Detect when FSD Jump flag gets set
-//					if (Debug) {
-						printf("FSD Jump flag set\x0a");
-//					}
+					printf("FSD Jump flag set\x0a");
 					if (!fHUDAnalysis & AutoHUD) {
 						tgHUDMode();		
 					}
@@ -913,7 +902,7 @@
 					if (!StartupLock) printf("On Foot\x0a");
 				}
 				else {
-					//not on foot
+					// not on foot
 				}
 			}
 
@@ -947,11 +936,9 @@
 			if (fOnFootOnPlanet != lOnFootOnPlanet) {
 				if (fOnFootOnPlanet) {
 					printf("We've set foot on planet surface\x0a");
-//					fnTextToSpeech("Planet");					
 				}
 				else {
 					printf("We've left the planet surface on foot\x0a");
-//					fnTextToSpeech("OFF Planet");										
 				}
 			}
 
@@ -987,7 +974,7 @@
 					DeferCall(1000, &fnVPOutput, "Its a bit nippie");					
 				}
 				else {
-					//									
+					//	nothing to do 								
 				}
 			}
 
@@ -996,7 +983,7 @@
 					DeferCall(1000, &fnVPOutput, "Its getting warm!");					
 				}
 				else {
-					//									
+					//	nothing to do 									
 				}
 			}
 
@@ -1005,7 +992,7 @@
 					DeferCall(1000, &fnVPOutput, "Its bloody freezing!");					
 				}
 				else {
-					//
+					//	nothing to do 
 				}
 			}
 
@@ -1014,7 +1001,7 @@
 					DeferCall(1000, &fnVPOutput, "Geezz its flamin hot");					
 				}
 				else {
-					//									
+					//	nothing to do 							
 				}
 			}
 
@@ -1048,11 +1035,9 @@
 			if (fOnFootExterior != lOnFootExterior) {					// Is this the same as fOnFootOnPlanet ???
 				if (fOnFootExterior) {
 					printf("We're outside on foot\x0a");
-//					DeferCall(1000, &fnTextToSpeech, "Outside");										
 				}
 				else {
 					printf("We're inside on foot\x0a");
-//					DeferCall(1000, &fnTextToSpeech, "Inside");										
 				}
 			}
 
@@ -1070,7 +1055,7 @@
 					printf("Telepresence multi crew detected\x0a");						
 				}
 				else {
-					//
+					//	nothing to do 
 				}
 			}
 
@@ -1079,7 +1064,7 @@
 					printf("Physical multi crew detected\x0a");	
 				}
 				else {
-					//									
+					//	nothing to do 
 				}
 			}
 
