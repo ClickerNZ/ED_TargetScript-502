@@ -647,12 +647,13 @@
 				}				
 			}
 
-			if (fFSDCooldown & !lFSDCooldown) {												// Detect when FSD enters cool down phase
+			if (fFSDCooldown != lFSDCooldown) {												// Detect when FSD enters cool down phase
 				if (fFSDCooldown) {
 					printf("FSD Cooling down\x0a");
 				}				
 				else {																		// Detect when FSD Cool down is complete
-					DeferCall(1000, &fnVPOutput, "Frameshift drive cooldown is complete");	// Seems this flag gets reset almost 2 seconds prior to in game graphic
+//					DeferCall(1000, &fnVPOutput, "Frameshift drive cooldown is complete");	// Seems this flag gets reset almost 2 seconds prior to in game graphic
+					fnVPOutput("Frameshift drive cooldown is complete");
 				}
 			}	
 
@@ -742,10 +743,10 @@
 				}
 				if (fSRV) {
 					if (fHUDAnalysis) {
-						fnTextToSpeech("Analysis mode");
+						DeferCall(500, &fnTextToSpeech, "Analysis mode");
 					}
 					else {
-						fnTextToSpeech("Combat mode");
+						DeferCall(500, &fnTextToSpeech, "Combat mode");
 					}				
 				}
 			}
