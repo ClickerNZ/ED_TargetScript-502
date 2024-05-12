@@ -312,10 +312,10 @@
 	//				fnTextToSpeech(&VoiceTxt, 50);				//says the text at 50% volume 
 	
 	// Usage4:		fnTextToSpeech("Test number 4", 0, &David);	//says the text at default volume using "David" voice
-	
+
 	int fnTextToSpeech(int text, int VolumeOverride=0, int Voice=DefaultVoice) {
 		char volume; Dim (&volume, 4); volume[0] = NUL;
-		char SysCmd; Dim(&SysCmd, 255); SysCmd[0] = NUL;			// Increase buffersize if required
+		char TTSSysCmd; Dim(&TTSSysCmd, 255); TTSSysCmd[0] = NUL;			// Increase buffer size if required
 
 		if (VolumeOverride > 0) {
 			sprintf(&volume, "%d", VolumeOverride);
@@ -323,21 +323,21 @@
 		else {
 			sprintf(&volume, "%d", VoiceVolume);
 		}
-		volume[3] = NUL;											// terminate char array 
+		volume[3] = NUL;													// terminate char array 
 		if (EnableVoice) {
 			if (!GameLoaded) {	
 				SerialText = 1;
 			}
-			if (SerialText) {										// sends external command to Windows then waits until finished before exeecuting next line in script
-				sprintf(&SysCmd, "%s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);				
+			if (SerialText) {												// sends external command to Windows then waits until finished before exeecuting next line in script
+				sprintf(&TTSSysCmd, "%s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);				
 			}
-			else {													// Parallel - send text to voice then immediately process next line in script. No waiting
-				sprintf(&SysCmd, "start %s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);
+			else {															// Parallel - send text to voice then immediately process next line in script.
+				sprintf(&TTSSysCmd, "start %s -v %s %s %s %s", &VoicePath, &volume, &VoiceCMD, Voice, text);
 			}
-			SysCmd[strlen(&SysCmd)] = NUL;							// terminate char array with nul
-
-			system(&SysCmd);										// send command to Windows
-			SerialText = 0;											// Reset SerialText flag
+			
+			TTSSysCmd[strlen(&TTSSysCmd)] = NUL;							// terminate char array with nul
+			system(&TTSSysCmd);												// send command to Windows
+			SerialText = 0;													// Reset SerialText flag
 		}
 	}
 
@@ -400,14 +400,14 @@
 	
 	int fnSoundFX(int wavfile, int vol=100, int loops=1) {
 
-		char SysCmd; Dim(&SysCmd, 255);	SysCmd[0] = NUL;			// Increase buffer size if required
+		char SFXSysCmd; Dim(&SFXSysCmd, 255);	SFXSysCmd[0] = NUL;			// Increase buffer size if required
 		
 		if (EnableSoundFX) {
 			
-			sprintf(&SysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
-			SysCmd[strlen(&SysCmd)] = NUL;							// terminate char array 
+			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
+			SFXSysCmd[strlen(&SFXSysCmd)] = NUL;							// terminate char array 
 
-			system(&SysCmd);										// send command to Windows			
+			system(&SFXSysCmd);										// send command to Windows			
 		}
 	}
 
