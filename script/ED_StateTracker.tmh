@@ -612,7 +612,7 @@
 
 			if (fSRV & (fSRVTurretRetracted != lSRVTurretRetracted)) {
 				if (fSRVTurretRetracted ) {									// Detect turret deploy/retract
-					fnVPOutput("Turret retracted");			
+					DeferCall(1000, &fnVPOutput, "Turret retracted");			
 				}
 				else {
 					fnVPOutput("Turret deployed");
@@ -652,7 +652,7 @@
 					printf("FSD Cooling down\x0a");
 				}				
 				else {																		// Detect when FSD Cool down is complete
-					DeferCall(1500, &fnVPOutput, "Frameshift drive cooldown is complete");	// Seems this flag gets reset almost 2 seconds prior to in game graphic
+					DeferCall(1000, &fnVPOutput, "Frameshift drive cooldown is complete");	// Seems this flag gets reset almost 2 seconds prior to in game graphic
 				}
 			}	
 
