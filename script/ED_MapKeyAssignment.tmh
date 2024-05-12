@@ -27,11 +27,11 @@
 //			Line 45: 	int MainKeyMap()
 //			Line 57:		Joystick Triggers
 //			Line 257:		Throttle Lever Switches
-//			Line 411:		Throttle Base Switches
-//			Line 642: 	int TrainingMap()
-//			Line 651:		Joystick Triggers
-//			Line 827:		Throttle Lever Switches
-//			Line 976:		Throttle Base Switches
+//			Line 409:		Throttle Base Switches
+//			Line 640: 	int TrainingMap()
+//			Line 649:		Joystick Triggers
+//			Line 825:		Throttle Lever Switches
+//			Line 974:		Throttle Base Switches
 
 
 // START
