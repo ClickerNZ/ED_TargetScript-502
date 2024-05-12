@@ -34,6 +34,8 @@
 	int VoiceExists;					// Declared here and set in initTextToSpeech()
 	int SerialText			= 0;		// Default TextToSpeech action is Parallel (call voice.exe and immediately process next instruction)
 										// Set SerialText prior to calling fnVPOutput() or fnTextToSpeech() to call voice.exe and wait until complete)
+	int TTSDelay			= 0;		// Text To Speech Delay to assist with multiple calls with short timeframe
+	
 	int SounderExists;					// Declared here and set in initSoundFX()
 
 	int JSProfile;						// Used in fnSetCurves() and fnEnhancedFAOFF() (see EDFunctions.tmh) Values = 0, 1 or 2
