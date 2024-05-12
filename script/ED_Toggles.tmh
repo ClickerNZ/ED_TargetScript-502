@@ -24,18 +24,18 @@
 // Index:	Line		FUNCTION
 //			Line 51: 	int tgTxt2Speech()
 //			Line 73: 	int tgEnhancedFAOFF()
-//			Line 104: 	int tgTriggerMode()
-//			Line 145: 	int tgLights()
-//			Line 203: 	int tgSilentRunning()
-//			Line 248: 	int tgCargoScoop()
-//			Line 284: 	int tgLandingGear()
-//			Line 323: 	int tgReverseThrust()
-//			Line 353:	int tgBoost()
-//			Line 377: 	int tgHardpoints()
-//			Line 414: 	int tgHUDMode()
-//			Line 429: 	int tgFSSMode()
+//			Line 108: 	int tgTriggerMode()
+//			Line 149: 	int tgLights()
+//			Line 199: 	int tgSilentRunning()
+//			Line 244: 	int tgCargoScoop()
+//			Line 270: 	int tgLandingGear()
+//			Line 313: 	int tgReverseThrust()
+//			Line 359:	int tgBoost()
+//			Line 378: 	int tgHardpoints()
+//			Line 415: 	int tgHUDMode()
+//			Line 430: 	int tgFSSMode()
 //			Line 456: 	int tgPlanetView()
-//			Line 481: 	int tgWarpDrive()
+//			Line 483: 	int tgWarpDrive()
 //			Line 555: 	int tgExtCamera()
 //			Line 570:	int tgXAxis()
 	
@@ -238,30 +238,20 @@
 	}
 
 	// TOGGLE: Cargo Scoop - LED4
-	// Parameter: 'x' = DEPLOY, RETRACT 
+	// Parameter: 'x' = DEPLOY (1), RETRACT (0) 
 	// NOTE: Aligns across menulog/restart <-- ED causes CargoScoop reset when menu log
 
 	int tgCargoScoop(int x) {
 		int fnName = "Cargo Scoop";
 		int reason;
-//		int action;
 		
-		if (!fSupercruise & !fDocked & !fLanded & (fSRV | fMainShip)) {				// Test we're in normal flight mode
+		if (!fSupercruise & !fDocked & !fLanded & (fSRV | fMainShip)) {				// Test we're in normal flight/driving mode
 			if (x != fCargoScoop) {
-//				if(x == DEPLOY) {													// Was RETRACTED, Deploy...
-//					action = "Deploy";
-//					printf("Cargo Scoop:		DEPLOYED	>>\x0a");
-//				}
-//				else if(x == RETRACT) {												// Was DEPLOYED, Retract...
-//					action = "Retract";
-//					printf("Cargo Scoop:		RETRACTED	<<\x0a");
-//				}
 				ActKey(PULSE+KEYON+CargoScoop);
 			}
 			else {																	// we usually only get here during a menulog
 				DeferCall(500, &fnSetLEDs, NUL);			
 			}
-				
 		}
 		else if (x) {																// Cargo scoop toggle function not valid
 			if (fSupercruise) {
@@ -320,7 +310,7 @@
 	//				2	Align Switch
 	//				3	Forward Thrust
 
-	int tgReverseThrust(int EnableSpeedBrake) {
+	int tgReverseThrust(int EnableSpeedBrake) {				////////////// NEEDS TESTING
 		int fnName = "Reverse";
 		int reason;
 
@@ -330,7 +320,6 @@
 		else {
 			ReverseThrust = 1;
 		}
-
 
 		if (!fSupercruise & !fOnFoot & (!fLanded | !fDocked)) {
 //			if (EnableSpeedBrake != 3) {
@@ -368,23 +357,18 @@
 	// TOGGLE:	Engine Boost
 	
 	int tgBoost() {
-		int fnName;
+		int fnName = "Engine Boost";		/////// DOES THIS WORK IN THE FIGHTER ???  ///////
 		int reason;
 		
-		if (!fLandingGear & !fSupercruise & !fSRV) {								// Test for normal flight mode 
+		if (!fLandingGear & !fSupercruise & fMainShip) {							// Test for normal flight mode 
 			ActKey(PULSE+KEYON+EngineBoost);
 		}
 		else {																		// Boost function not valid 
-			fnName = "Engine Boost";
-			if (fLandingGear) {
-				reason = "Landing gear";
-			}
-			if (fSupercruise) {
-				reason = "Supercruise";
-			}
-			if (fSRV) {
-				reason = "SRV";
-			}
+			if (fLandingGear)	reason = "Landing gear";
+			if (fSupercruise)	reason = "Supercruise";
+			if (fSRV) 			reason = "SRV";
+			if (fOnFoot)		reason = "On foot";
+			
 			fnNotValid(fnName, reason);
 		}
 	}
@@ -447,9 +431,8 @@
 		int fnName = "FSS Mode";
 		int reason;
 		
-		stfnProcessGuiFocus();									// Get current FSSMode flag
-		
 		if (fSupercruise) {
+			stfnProcessGuiFocus();								// Get current FSSMode flag		
 			if (!fHUDAnalysis) tgHUDMode();
 			if (!FSSMode) {	
 				ActKey(PULSE+KEYON+FSSModeON);
@@ -474,8 +457,8 @@
 		int fnName = "Toggle Planet View";
 		int reason;
 		int VoiceTxt;
-		
-		stfnProcessGuiFocus();									// Get SAAMode flag
+
+		stfnProcessGuiFocus();									// Get SAAMode flag		
 		
 		if (SAAMode) {
 			ActKey(PULSE+KEYON+FBView);
