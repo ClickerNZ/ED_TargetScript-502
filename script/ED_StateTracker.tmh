@@ -456,7 +456,7 @@
 				}
 			}
 			
-			if (!fShieldsUp & lShieldsUp & !fSilentRunning & fMainShip & !fLanded) {		// Shields just dropped
+			if ((!fShieldsUp & lShieldsUp) & (!fSilentRunning & fMainShip) & !fLanded) {		// Shields just dropped
 				if (fDanger) {
 					if (AutoStrobe) {
 						DeferCall(750, &fnVPOutput, "Activating Silent Strobe");
@@ -619,7 +619,7 @@
 				}
 			}
 
-			if (fSRVDriveAssist != lSRVDriveAssist & (fSRV)) {
+			if (fSRVDriveAssist != lSRVDriveAssist & fSRV) {
 				if (fSRVDriveAssist) {
 					printf("SRVDriveAssist: ON\x0a");
 				}
@@ -666,19 +666,22 @@
 				}				
 			}
 
-			if (fOverHeating & !lOverHeating) {							// Detect when we start overheation
-				if (fMainShip) {
+			if (fOverHeating != lOverHeating) {								// Detect when we start overheation
+				if (fMainShip & fOverHeating) {
 					if (AutoHeatsink) {										// If 'AutoHeatSink' is set, fire a heatsink if we have one
-						fnVPOutput("Auto Heat sink engaged!");
+						fnVPOutput("OVERHEATING: Auto Heat sink engaged!");
 						ActKey(PULSE+KEYON+DeployHeatSink);
 					}
 					else {
-						fnTextToSpeech("Consider firing a heat sink commander", 100);
+						fnTextToSpeech("OVERHEATING: Consider firing a heat sink commander", 100);
 					}
+				}
+				else {
+					printf("Overheating event over\x0a");
 				}
 			}
 
-			if (fMainShip & fLatLong != lLatLong) {						// Detect when we cross the Orbital Cruise boundary
+			if ((fLatLong != lLatLong) & fMainShip) {							// Detect when we cross the Orbital Cruise boundary
 				if (fLatLong) {
 					OrbitalCruise = 1;
 				}
@@ -723,12 +726,12 @@
 				}
 			}
 
-			if (fSRV & !lSRV) {												// Detect when we jump into SRV
+			if (fSRV != lSRV) {												// Detect when we jump into SRV
 				if (fSRV) {
 					if (!StartupLock) printf("SRV:			BOARDED\x0a");
 				}
 				else {
-					printf("SRV:			RDISEMBARKED\x0a");
+					printf("SRV:			DISEMBARKED\x0a");
 				}
 			}
 
@@ -751,7 +754,7 @@
 				}
 			}
 			
-			if ((fMainShip | fSRV) & (fNightVision != lNightVision)) {
+			if ((fNightVision != lNightVision) & (fMainShip | fSRV)) {
 				if (fNightVision & ((fSRV == lSRV) | (fMainShip == lMainShip))) {
 					fnVPOutput("Night vision");
 				}
