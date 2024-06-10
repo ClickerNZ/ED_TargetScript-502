@@ -246,7 +246,7 @@
 		int reason;
 		
 		if (!fSupercruise & !fDocked & !fLanded & (fSRV | fMainShip)) {				// Test we're in normal flight/driving mode
-			if (x != fCargoScoop) {
+			if ((x & !fCargoScoop) | (!x & fCargoScoop)) {
 				ActKey(PULSE+KEYON+CargoScoop);
 			}
 			else {																	// we usually only get here during a menulog
@@ -310,7 +310,7 @@
 	//				2	Align Switch
 	//				3	Forward Thrust
 
-	int tgReverseThrust(int EnableSpeedBrake) {				////////////// NEEDS TESTING
+	int tgReverseThrust(int EnableSpeedBrake) {				////////////// NEEDS FURTHER TESTING
 		int fnName = "Reverse";
 		int reason;
 
@@ -320,33 +320,36 @@
 		else {
 			ReverseThrust = 1;
 		}
-
-		if (!fSupercruise & !fOnFoot & (!fLanded | !fDocked)) {
+		
+		if (!fSupercruise & !fOnFoot & !fLanded & !fDocked) {
 //			if (EnableSpeedBrake != 3) {
 //				ReverseThrust = 1;
 //			}
 //			else {
 //				ReverseThrust = 0;
 //			}
-//			if(EnableSpeedBrake != 2) {												// [PSB] held when Reverse toggled fixes misaligned switch
-				ActKey(PULSE+KEYON+ReverseThrottle);								// or press NUMPAD *
-//			}
-//			ReverseThrust = !ReverseThrust;											// Internal state flag 
+//			if(EnableSpeedBrake != 2) {														// [PSB] held when Reverse toggled fixes misaligned switch
+				ActKey(PULSE+KEYON+ReverseThrottle);										// or press NUMPAD *
+//			}	
+//			ReverseThrust = !ReverseThrust;													// Internal state flag 
 			if (ReverseThrust) {
 				printf("Throttle:			REVERSE	>>\x0a");
-
+				AutoRepeat(hBeepFX, 1000, &fnSoundFX, 0);									// wavfile = 0 causes wavfile to be set to "beep"
+				
 				// TOGGLE: Speedbrake
-				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {				// If PSF OR (hardpoints deployed AND Gear Retracted)...
+				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {						// If PSF OR (hardpoints deployed AND Gear Retracted)...
 					SpeedbrakeDeployed = YES;
-					tgLandingGear(SpeedbrakeDeployed);								// Use Landing Gear as a speed brake...
-					DeferCall(5000, &tgLandingGear, SpeedbrakeDeployed);			// ...then retract after 5 seconds
+					tgLandingGear(SpeedbrakeDeployed);										// Use Landing Gear as a speed brake...
+					DeferCall(5000, &tgLandingGear, SpeedbrakeDeployed);					// ...then retract after 5 seconds
 				}
 			}
-			else
+			else {
 				printf("Throttle:			FORWARD	>>\x0a");
+				StopAutoRepeat(hBeepFX);
+			}
 		}
 		else if (EnableSpeedBrake != 3){
-			if (fSuperCruise) reason = "we are in supercruise";
+			if (fSupercruise) reason = "we are in supercruise";
 			else if (fOnFoot) reason = "we are on foot";
 			else if (fLanded) reason = "we are landed";
 			else if (fDocked) reason = "we are docked";
@@ -354,18 +357,27 @@
 		}
 	}
 
-	// TOGGLE:	Engine Boost
+	// TOGGLE:	Engine Boost in normal flight mode. Activate/Deactivate Supercruise Over Charge when in Supercruise 
 	
 	int tgBoost() {
 		int fnName = "Engine Boost";		/////// DOES THIS WORK IN THE FIGHTER ???  ///////
 		int reason;
 		
-		if (!fLandingGear & !fSupercruise & fMainShip) {							// Test for normal flight mode 
+		if (fMainShip & !fLandingGear) {											// Test for normal flight mode 
 			ActKey(PULSE+KEYON+EngineBoost);
+			if (fSupercruise) {
+				if (SCO) {
+					fnVPOutput("Supercruise Overcharge Disengaged");
+					SCO = 0;
+				}
+				else {
+					fnVPOutput("Supercruise Overcharge");				
+					SCO = 1;
+				}
+			}
 		}
 		else {																		// Boost function not valid 
 			if (fLandingGear)	reason = "Landing gear";
-			if (fSupercruise)	reason = "Supercruise";
 			if (fSRV) 			reason = "SRV";
 			if (fOnFoot)		reason = "On foot";
 			
