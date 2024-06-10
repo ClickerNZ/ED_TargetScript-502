@@ -71,6 +71,8 @@
 	int XAxisMode			= 0;		// Used to track which mode X-Axis is, Roll (default) or Yaw
 	
 	int WDRetries			= 0;		// Failed Warpdrive retry count (eg MassLocked when trying to go to supercruise)
+	
+	int SCO					= 0;		// Supercruise Overcharge flag
 
 			
 // END
