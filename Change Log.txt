@@ -3,6 +3,23 @@
 v5.0.2	- New Point Release
 		- Many changes and enhancements
 		- Re-Index
+		- Fix FSD cooldown logic
+		- Add delay to Analysis Mode announcement in SRV
+		- Include toggle check for ALL status.json flag bits
+		- Use common handle for Primary and Secondary Fire for AdvFireControl
+		- update version info to signal compatibility in Main
+		- consolidate handle names for AutoRepeat and REXEC in ED_ScriptDefines
+		- update file locations etc due to new PC build in ED_UserSettings
+		- comment out MS TTS Voices not yet installed in ED_UserSettings
+		- ED_Toggles
+			- tweak cargo scoop code
+			- overhaul ReverseThrust code
+			- add reverse beep SFX to ReverseThrust
+			- enable Boost function for Supercruise (for SCO drives)
+		- ED_StateTracker
+			- Track json length and announce when new max length found
+			- include NewMaxJson variable to save/reload
+			- lots of minor cosmetic changes
 
 
 v5.0.1	- New Point Release
