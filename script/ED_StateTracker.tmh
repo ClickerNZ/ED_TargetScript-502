@@ -57,6 +57,11 @@
 		int 	buf = 768;				// refer 'NewMaxJson' above
 		int		myResult;
 		int		newJson			= 0;	// set when myJson != lastJson...we then call stfnProcessFlags();
+		int 	json100;
+		int		json10;
+		int		json1;
+		
+		char	jason; Dim(&jason, 16); jason[0] = 0;
 
 		Dim(&myJson, buf);
 		myJson[0] = NUL;
@@ -91,6 +96,14 @@
 						printf("\x0a\				-=+=- Max json length seen = %d -=+=-\x0a", maxjson);
 						fnSoundFX("snd_warn", 100);
 						NewMaxJson = maxjson;
+
+						json100 = (NewMaxJson - (NewMaxJson % 100))/100;
+						json10	= (NewMaxJson % 100) / 10;
+						json1 	= (NewMaxJson % 100) % 10;
+
+						sprintf(&jason, "jason %d %d%d", json100, json10, json1);						// Speaks each digit ... eg 5,9,8
+						fnTextToSpeech(&jason);
+						
 						loop = 0;
 						stfnWriteMaxJson();
 					}
@@ -474,6 +487,7 @@
 				}
 				else {
 					printf("Supercruise flag reset\x0a");
+					SCO = 0;
 					if (SelectDrop == NO) {													// Uninitiated drop				
 						if (OrbitalCruise & !fInterdicted) {
 							VoiceTxt = "Entering Glide Mode";
@@ -549,22 +563,20 @@
 				}
 			}
 
-			if (fCargoScoop != lCargoScoop) {					
+			if (fCargoScoop != lCargoScoop & ((fMainShip | fSRV) & !fSupercruise)) {					
 				if(fCargoScoop) {
-					printf("Cargo scoop:	DEPLOYED\x0a");				// Vocalised in game
+					printf("Cargo scoop:	DEPLOYED\x0a");					// Vocalised in game
 				}
 				else {
 					printf("Cargo scoop:	RETRACTED\x0a");
-				}
+				}				
 			}
 
-			// Check and align switch with function - TESTING
-			if (Throttle[RDRNRM] & !fCargoScoop & ((fMainShip | fSRV) & !fSupercruise)) {
-				ActKey(PULSE+KEYON+CargoScoop);
-			}
-			if (Throttle[RDRDIS] & fCargoScoop & ((fMainShip | fSRV) & !fSupercruise)) {
-				ActKey(PULSE+KEYON+CargoScoop);
-			}
+// TESTING  // Check and align switch with function
+//			if ((Throttle[RDRNRM] & !fCargoScoop) | (Throttle[RDRDIS] & fCargoScoop)) {
+//				ActKey(PULSE+KEYON+CargoScoop);								// Fix misaligned switch?
+//			}
+/////////////
 
 			if (fSilentRunning != lSilentRunning) {
 				if (fSilentRunning) {
@@ -575,13 +587,11 @@
 				}
 			}
 
-			// Check and align switch with function - TESTING 
-			if (Throttle[EACON] & !fSilentRunning & (fMainShip & !fSupercruise & !fLanded & !fDocked)) {
-				ActKey(PULSE+KEYON+SilentRunning);
-			}
-			if (Throttle[EACOFF] & fSilentRunning & (fMainShip & !fSupercruise & !fLanded & !fDocked)) {
-				ActKey(PULSE+KEYON+SilentRunning);
-			}
+// TESTING	// Check and align switch with function
+//			if ((Throttle[EACON] & !fSilentRunning) | (Throttle[EACOFF] & fSilentRunning)) {
+//				ActKey(PULSE+KEYON+SilentRunning);							// Fix misaligned switch?
+//			}
+//////////////
 
 			if (fFuelScoop != lFuelScoop) {
 				if (fFuelScoop) {
@@ -633,14 +643,14 @@
 					fnVPOutput("Mass Locked!");
 				}
 				
-				if (!fMassLocked & lMassLocked & fMainShip) {				// Detect when no longer Mass Locked
+				if (!fMassLocked & lMassLocked & fMainShip & !fDocked & !fLanded) {				// Detect when no longer Mass Locked
 					fnVPOutput("Masslock cleared");
 				}
 			}
 
 			if (fFSDCharging != lFSDCharging) {
 				if (fFSDCharging) {
-					printf("FSD begin charging\x0a");
+					printf("FSD charging\x0a");
 				}
 				else {
 					// do nothing
@@ -652,7 +662,6 @@
 					printf("FSD Cooling down\x0a");
 				}				
 				else {																		// Detect when FSD Cool down is complete
-//					DeferCall(1000, &fnVPOutput, "Frameshift drive cooldown is complete");	// Seems this flag gets reset almost 2 seconds prior to in game graphic
 					fnVPOutput("Frameshift drive cooldown is complete");
 				}
 			}	
@@ -746,10 +755,10 @@
 				}
 				if (fSRV) {
 					if (fHUDAnalysis) {
-						DeferCall(500, &fnTextToSpeech, "Analysis mode");
+						DeferCall(750, &fnTextToSpeech, "Analysis mode");
 					}
 					else {
-						DeferCall(500, &fnTextToSpeech, "Combat mode");
+						DeferCall(750, &fnTextToSpeech, "Combat mode");
 					}				
 				}
 			}
@@ -775,9 +784,15 @@
 			if (fFSDJump != lFSDJump) {										// Detect when Supercruise or Hyperjump has been toggled
 				if (!fFSDJump) {											// Detect when FSD Jump flag gets reset
 					printf("FSD Jump flag reset\x0a");
+/// TESTING																	// TEST IF SCO DISENGAGED after SYSTEMJUMP
+					SCO = 0;												// Reset Supercruise Overcharge Flag.
+////////////
 				}
 				else {														// Detect when FSD Jump flag gets set
 					printf("FSD Jump flag set\x0a");
+					
+//  OR, does SSCO disengage when hitting system jump???
+//					SCO = 0;												// Reset Supercruise Overcharge Flag.
 					if (!fHUDAnalysis & AutoHUD) {
 						tgHUDMode();		
 					}
@@ -786,7 +801,7 @@
 
 			if (fSRVHiBeam != lSRVHiBeam) {
 				if (fSRVHiBeam & (fSRV == lSRV)) {
-					fnVPOutput("SRV Hi Beam ON");
+					fnVPOutput("SRV Hi Beam");
 				}
 				else {
 					// Lights OFF
@@ -1121,6 +1136,13 @@
 	
 	int stfnStartCheck() {
 		int fp;								// file pointer (handle)
+		int json100;
+		int json10;
+		int json1;
+		
+		char jason; 
+		Dim(&jason, 16);
+		jason[0] = 0;		
 		
 		fp = fopen(&StatusFile, "r");
 		if (fp) {
@@ -1147,10 +1169,21 @@
 				printf("++	Waiting for Game to load...\x0a");	
 				printf("\x0a\Script initialized and running @ %s \x0a", fnGetTOD());
 				printf("\x0a\				-=+=- Max json length seen = %d -=+=-\x0a\x0a", NewMaxJson);
+
+
+				json100 = (NewMaxJson - (NewMaxJson % 100))/100;
+				json10	= (NewMaxJson % 100) / 10;
+				json1 	= (NewMaxJson % 100) % 10;
+
+				sprintf(&jason, "jason %d %d%d", json100, json10, json1);						// Speaks each digit
+				
+				SerialText = 1;
+				fnTextToSpeech(&jason);
+				
 				SerialText = 1;				
 				fnTextToSpeech("Waiting for game to load");
 			}
-			fnSoundFX("tada", 100);					
+			fnSoundFX("tada");
 		}
 	}
 
@@ -1246,7 +1279,7 @@
 					printf("OldCurves		= %d\x0a", OldCurves);
 					printf("LEDLevel		= %d\x0a", LEDLevel);
 					printf("NewMaxJson		= %d\x0a", NewMaxJson);
-					printf("PIPMode		= %d\x0a\x0a", PIPMode);
+					printf("PIPMode		= %d\x0a\x0a", PIPMode);					
 				}
 				else {
 					fnVPOutput("Error reading MyStates from status file", 100);
