@@ -60,9 +60,9 @@
 
 //	here's mine as an example...
 
-	alias	JournalFolder		= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
-	alias	StatusFile			= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
-	alias	MaxStatusFile		= "C:\\Users\\clicker\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
+	alias	JournalFolder		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
+	alias	StatusFile			= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
+	alias	MaxStatusFile		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
 	
 	define	StatusReadRate		500		// Set Read Loop rate in milliseconds. (ie 500 = read status.json twice a second)
 										// You may see issues if this is set too small. If you do, raise this value to 750, 1000, or higher
@@ -104,20 +104,23 @@
 	// The below are the voices I've installed and tested on my PC...
 	
 	alias	Hazel				= "-n \"Microsoft Hazel Desktop\"";		// Adult, Female,	en-GB
-	alias 	Susan				= "-n \"Microsoft Susan\"";				// Adult, Female,	en-GB
-	alias	George				= "-n \"Microsoft George\"";			// Adult, Male,		en-GB	
-	alias	James				= "-n \"Microsoft James\"";				// Adult, Male,		en-AU
+	// alias 	Susan				= "-n \"Microsoft Susan\"";				// Adult, Female,	en-GB
+	// alias	George				= "-n \"Microsoft George\"";			// Adult, Male,		en-GB	
+	// alias	James				= "-n \"Microsoft James\"";				// Adult, Male,		en-AU
 	alias	Catherine			= "-n \"Microsoft Catherine\"";			// Adult, Female,	en-AU
-	alias	Sean				= "-n \"Microsoft Sean\"";				// Adult, Male,		en-IE
-	alias	Richard				= "-n \"Microsoft Richard\"";			// Adult, Male,		en-CA
-	alias	Linda				= "-n \"Microsoft Linda\"";				// Adult, Female,	en-CA
-	alias	David				= "-n \"Microsoft David Desktop\"";		// Adult, Male,		en-US
+	// alias	Sean				= "-n \"Microsoft Sean\"";				// Adult, Male,		en-IE
+	// alias	Richard				= "-n \"Microsoft Richard\"";			// Adult, Male,		en-CA
+	// alias	Linda				= "-n \"Microsoft Linda\"";				// Adult, Female,	en-CA
+	// alias	David				= "-n \"Microsoft David Desktop\"";		// Adult, Male,		en-US
 	alias	Mark				= "-n \"Microsoft Mark Desktop\"";		// Adult, Male,		en-US
 	alias	Zira				= "-n \"Microsoft Zira Desktop\"";		// Adult, Female,	en-US 
-	alias	Heera				= "-n \"Microsoft Heera\"";				// Adult, Male,		en-IN
-	alias	Ravi				= "-n \"Microsoft Ravi\"";				// Adult, Female,	en-IN 
+	// alias	Heera				= "-n \"Microsoft Heera\"";				// Adult, Male,		en-IN
+	// alias	Ravi				= "-n \"Microsoft Ravi\"";				// Adult, Female,	en-IN 
 	
 	int		DefaultVoice		= &Catherine;			// Set your preferred (installed) voice here
+//	int		DefaultVoice		= &Hazel;				// Set your preferred (installed) voice here
+//	int		DefaultVoice		= &Zira;				// Set your preferred (installed) voice here
+//	int		DefaultVoice		= &Mark;				// Set your preferred (installed) voice here
 
 	alias	VoiceCMD			= "-r 1";				// "-r 0" = normal rate. "-r 2" = 20% faster
 	
