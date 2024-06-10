@@ -75,13 +75,13 @@
 // REXEC and AutoRepeat Handles //
 //------------------------------//
 
-	define hPWSprimary							0						// Used in ED_Functions.tmh						- PWS fire option on primary trigger
-	define hPWSsecondary						1						// Used in ED_Functions.tmh						- PWS fire option on secondary trigger
-	define hReadStatusJson						2						// Used in ED_StateTracker.tmh					- main read ststus.json background loop
-	define hSRStrobe							3						// Used in ED_Toggles.tmh						- Silent Running Strobe
-	define hFSDCharge							4						// Used in ED_Toggles.tmh & ED_Functions.tmh	- FSD Charge detection
-	define hMassLocked							5						// Used in ED_Toggles.tmh & ED_Functions.tmh	- FSD Masslocked check/retry
-	define hSoundFX								6						// Used in  ED_MapKeyAssignment.tmh 			- PSF & PSB reminder sound
+	define hPWS									0						// Used in ED_Functions.tmh						- PWS fire option on primary/secondary trigger
+	define hReadStatusJson						1						// Used in ED_StateTracker.tmh					- main read ststus.json background loop
+	define hSRStrobe							2						// Used in ED_Toggles.tmh						- Silent Running Strobe
+	define hFSDCharge							3						// Used in ED_Toggles.tmh & ED_Functions.tmh	- FSD Charge detection
+	define hMassLocked							4						// Used in ED_Toggles.tmh & ED_Functions.tmh	- FSD Masslocked check/retry
+	define hSoundFX								5						// Used in ED_MapKeyAssignment.tmh 				- PSF & PSB reminder sound
+	define hBeepFX								6						// Used in ED_Toggles.tmh						- Reverse thrust
 
 //----------------------------------------------------------------------//
 // SCRIPT BOOLEAN and STATE DEFINES										//
