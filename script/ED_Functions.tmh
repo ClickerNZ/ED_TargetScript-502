@@ -50,14 +50,15 @@
 //			Line 981:	int fnCheckFSDMassLocked()
 //			Line 1010:	int fnClearChatBox()
 //			Line 1065: 	int fnModeSwitch()
-//			Line 1124:	int fnVPOutput()
-//			Line 1136: 	int fnPrintState()
-//			Line 1147: 	int fnStateDump()
-//			Line 1310: 	int fnDebug()
-//			Line 1335:	int fnGetTOD()
-//			Line 1353:	int fnGetDate()
-//			Line 1376:	int findstr()
-//			Line 1403:	int ModKey()			// not used
+//			Line 1125:	int fnReverseBeep()
+//	X		Line 1124:	int fnVPOutput()
+//	X		Line 1136: 	int fnPrintState()
+//	X		Line 1147: 	int fnStateDump()
+//	X		Line 1310: 	int fnDebug()
+//	X		Line 1335:	int fnGetTOD()
+//	X		Line 1353:	int fnGetDate()
+//	X		Line 1376:	int findstr()
+//	X		Line 1403:	int ModKey()			// not used
 
 //------------------//
 // CUSTOM FUNCTIONS //
@@ -403,6 +404,7 @@
 		char SFXSysCmd; Dim(&SFXSysCmd, 255);	SFXSysCmd[0] = NUL;			// Increase buffer size if required
 		
 		if (EnableSoundFX) {
+			if (wavfile == 0) wavfile = "beep";
 			
 			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
 			SFXSysCmd[strlen(&SFXSysCmd)] = NUL;							// terminate char array 
@@ -433,7 +435,7 @@
 		if (Throttle[EACON] | Throttle[RDRNRM] | Throttle[SPDF]) {
 			// Align toggle switches and internal status flags if required
 			if (Throttle[EACON])	DeferCall(1000, &tgSilentRunning,	ON);		//MAYBE NOT NEEDED if moved to stfnProcessFlags() like CargoScoop code	
-//			if (Throttle[RDRNRM])	DeferCall(1750, &tgCargoScoop,		DEPLOY);	//MAYBE NOT NEEDED now checked in stfnProcessFlags()	
+			if (Throttle[RDRNRM])	DeferCall(1750, &tgCargoScoop,		DEPLOY);	//MAYBE NOT NEEDED now checked in stfnProcessFlags()	
 			if (Throttle[SPDF])		DeferCall(2500, &tgReverseThrust,	OFF);       //Cannot avoid this one as there is no FLAGS bit for this
 		}
 		else DeferCall(1100, &fnSetLEDs, NUL);
@@ -661,10 +663,10 @@
 			}
 			if (FireModeP == 2) {
 				if (!TriggerStateP) {
-					AutoRepeat(hPWSprimary, 7000, &ActKey, PULSE+KEYON+PrimaryFire);	// Pulse Wave Scanner. Press 'fire' every 7 seconds 
+					AutoRepeat(hPWS, 7000, &ActKey, PULSE+KEYON+PrimaryFire);			// Pulse Wave Scanner. Press 'fire' every 7 seconds 
 				}
 				else {
-					StopAutoRepeat(hPWSprimary);										// Press to stop PWS
+					StopAutoRepeat(hPWS);												// Press to stop PWS
 				}
 				TriggerStateP = !TriggerStateP;								
 			}
@@ -693,10 +695,10 @@
 			}
 			if (FireModeS == 2) {
 				if (!TriggerStateS) {
-					AutoRepeat(hPWSsecondary, 7000, &ActKey, PULSE+KEYON+SecondaryFire);// Pulse Wave Scanner
+					AutoRepeat(hPWS, 7000, &ActKey, PULSE+KEYON+SecondaryFire);			// Pulse Wave Scanner
 				}
 				else {
-					StopAutoRepeat(hPWSsecondary);										// Press to stop PWS
+					StopAutoRepeat(hPWS);												// Press to stop PWS
 				}
 				TriggerStateS = !TriggerStateS;			
 			}		
