@@ -23,15 +23,15 @@
 
 // Index:	Line		FUNCTION
 //			Line 53: 	int stfnReadStatusJson()
-//			Line 142:	int stfnWriteMaxJson()
-//			Line 183: 	int stfnGetKeyValue()
-//			Line 291: 	int stfnProcessFlags()
-//			Line 816:	int stfnProcessFlags2()
-//			Line 1093: 	int stfnProcessGuiFocus()
-//			Line 1118: 	int stfnStartCheck()
-//			Line 1173:	int stfnMyStates()
-//			Line 1267:	int stfnDumpFlags()
-//			Line 1330:	int stfnDumpFlags2()
+//			Line 155:	int stfnWriteMaxJson()
+//			Line 196: 	int stfnGetKeyValue()
+//			Line 304: 	int stfnProcessFlags()
+//			Line 836:	int stfnProcessFlags2()
+//			Line 1113: 	int stfnProcessGuiFocus()
+//			Line 1138: 	int stfnStartCheck()
+//			Line 1211:	int stfnMyStates()
+//			Line 1305:	int stfnDumpFlags()
+//			Line 1368:	int stfnDumpFlags2()
 	
 // START
 
@@ -148,7 +148,7 @@
 	}
 
 
-	// FUNCTION:	Write NewMaxJson.json to JOurnal folder
+	// FUNCTION:	Write NewMaxJson.json to Journal folder
 	// Requires:	'MaxStatusFile' string variable to be correctly set in ED_UserSettings file
 	// Called by..	stfnReadStatusJson() each time NewMaxJson is found
 
@@ -220,21 +220,21 @@
 		
 		// Find the Key (pattern) ...
 
-		int Start = findstr(&myJson, &pattern);						// 'findstr()' is my version of 'strstr()' in sys.tmh...which doesn't work...defined in ED_Functions.tmh 
-																	// 'Start' contains the character count to the first character of the Keyname, if found. 
-		if (Start == -1) {											// 'Start' contains -1 if the Keyname is not found
+		int Start = findstr(&myJson, &pattern);							// 'findstr()' is my version of 'strstr()' in sys.tmh...which doesn't work...defined in ED_Functions.tmh 
+																		// 'Start' contains the character count to the first character of the Keyname, if found. 
+		if (Start == -1) {												// 'Start' contains -1 if the Keyname is not found
 			return -1;
 		}
 		
 		// Now grab the key-value...
 		
-		valstart = Start + PatLen + 2;								// start of value we're after
+		valstart = Start + PatLen + 2;									// start of value we're after
 
 		chrpnt = 0;
 						
 		myResult = strcmp(&pattern, "Pips");
 		
-		if (myResult == 0) {										// pattern = "Pips"
+		if (myResult == 0) {											// pattern = "Pips"
 			vallen = 5;
 			while(chrpnt < vallen) {
 				strsub(&thischr, &myJson, valstart+chrpnt, valstart+chrpnt);
@@ -259,7 +259,7 @@
 				chrpnt = chrpnt + 1;
 				strsub(&thischr, &myJson, valstart+chrpnt, valstart+chrpnt);
 				
-				myResult = strcmp(&thischr, ",");					// end of value signalled by ',' or '}' or ' ' or '"' 
+				myResult = strcmp(&thischr, ",");						// end of value signalled by ',' or '}' or ' ' or '"' 
 				if (myResult == 0 & (vtype == FLOAT | vtype == INTEGER)) EndValue = 1;
 				
 				myResult = strcmp(&thischr, "}");
@@ -274,11 +274,11 @@
 				myResult = strcmp(&thischr, "\"");
 				if (myResult == 0 & vtype == STRING) EndValue = 1;			
 				
-				if (EndValue == 0) strcat(&keyvalue, &thischr);		// continue building char array
+				if (EndValue == 0) strcat(&keyvalue, &thischr);			// continue building char array
 			}			
 		}
 		
-		keyvalue[chrpnt] = NUL;										// terminate char array with a nul 
+		keyvalue[chrpnt] = NUL;											// terminate char array with a nul 
 				
 		// Return converted key-value...
 		
@@ -290,8 +290,8 @@
 		}
 
 		if (vtype == STRING) {			
-			strdel(&keyvalue, 0, 0);								// Just remove leading quote and...
-			return 0;												// ...use the global &keyvalue on return
+			strdel(&keyvalue, 0, 0);									// Just remove leading quote and...
+			return 0;													// ...use the global &keyvalue on return
 		}
 	}
 	// End of stfnGetKeyValue()
@@ -462,14 +462,14 @@
 			
 			if (fLandingGear != lLandingGear) {								// This may be announced via in game setting
 				if (fLandingGear & fMainShip) {								// Dealt with in tgLandingGear
-					// Landing Gear Deployed 
+//					Landing Gear Deployed 
 				}
 				else if (fMainShip) {	
-					// Landing Gear retracted  
+//					Landing Gear retracted  
 				}
 			}
 			
-			if ((!fShieldsUp & lShieldsUp) & (!fSilentRunning & fMainShip) & !fLanded) {		// Shields just dropped
+			if ((!fShieldsUp & lShieldsUp) & (!fSilentRunning & fMainShip) & !fLanded) {	// Shields just dropped
 				if (fDanger) {
 					if (AutoStrobe) {
 						DeferCall(750, &fnVPOutput, "Activating Silent Strobe");
@@ -573,24 +573,28 @@
 			}
 
 // TESTING  // Check and align switch with function
+//
 //			if ((Throttle[RDRNRM] & !fCargoScoop) | (Throttle[RDRDIS] & fCargoScoop)) {
 //				ActKey(PULSE+KEYON+CargoScoop);								// Fix misaligned switch?
 //			}
+//
 /////////////
 
 			if (fSilentRunning != lSilentRunning) {
 				if (fSilentRunning) {
-					// do nothing ... handled within tgSilentRunning()
+//					do nothing ... handled within tgSilentRunning()
 				}
 				else {
-					// do nothing ... handled within tgSilentRunning()
+//					do nothing ... handled within tgSilentRunning()
 				}
 			}
 
 // TESTING	// Check and align switch with function
+//
 //			if ((Throttle[EACON] & !fSilentRunning) | (Throttle[EACOFF] & fSilentRunning)) {
 //				ActKey(PULSE+KEYON+SilentRunning);							// Fix misaligned switch?
 //			}
+//
 //////////////
 
 			if (fFuelScoop != lFuelScoop) {
@@ -643,7 +647,7 @@
 					fnVPOutput("Mass Locked!");
 				}
 				
-				if (!fMassLocked & lMassLocked & fMainShip & !fDocked & !fLanded) {				// Detect when no longer Mass Locked
+				if (!fMassLocked & lMassLocked & fMainShip & !fDocked & !fLanded) {			// Detect when no longer Mass Locked
 					fnVPOutput("Masslock cleared");
 				}
 			}
@@ -653,7 +657,7 @@
 					printf("FSD charging\x0a");
 				}
 				else {
-					// do nothing
+//					do nothing
 				}				
 			}
 
@@ -781,18 +785,15 @@
 				}				
 			}
 
+			// Cannot select FSDJump when SCO is in Overcharge mode. This is announced in-game.
+			// There is currently no status.json flag for this
 			if (fFSDJump != lFSDJump) {										// Detect when Supercruise or Hyperjump has been toggled
 				if (!fFSDJump) {											// Detect when FSD Jump flag gets reset
 					printf("FSD Jump flag reset\x0a");
-/// TESTING																	// TEST IF SCO DISENGAGED after SYSTEMJUMP
-					SCO = 0;												// Reset Supercruise Overcharge Flag.
-////////////
 				}
 				else {														// Detect when FSD Jump flag gets set
 					printf("FSD Jump flag set\x0a");
 					
-//  OR, does SSCO disengage when hitting system jump???
-//					SCO = 0;												// Reset Supercruise Overcharge Flag.
 					if (!fHUDAnalysis & AutoHUD) {
 						tgHUDMode();		
 					}
@@ -804,7 +805,7 @@
 					fnVPOutput("SRV Hi Beam");
 				}
 				else {
-					// Lights OFF
+//					Lights OFF - handled elsewhere
 				}				
 			}
 						
@@ -839,7 +840,7 @@
 		// Note: "bitwise and" (&) test won't work for a negative number
 		// and can only mean bit 31 (fSRVHiBeam) is set.
 		
-		// "lFlagName" is "Last or previous flag value 							// Allows us to track each time a flag is toggled
+		// "lFlagName" is "Last" or previous flag value 						// Allows us to track each time a flag is toggled
 		int lOnFoot 				= fOnFoot;									// Track On Foot flag changes
 		int lInTaxi					= fInTaxi;
 		int lInMultiCrew			= fInMultiCrew;	      
@@ -921,7 +922,7 @@
 					if (!StartupLock) printf("On Foot\x0a");
 				}
 				else {
-					// not on foot
+//					not on foot
 				}
 			}
 
@@ -961,14 +962,14 @@
 				}
 			}
 
-//			if (fAimDownSight != lAimDownSight) {						// I cannot think of a use for reporting this 
-//				if (fAimDownSight) {
-//										
-//				}
-//				else {
-//														
-//				}
-//			}
+			if (fAimDownSight != lAimDownSight) {						// I cannot think of a use for reporting this 
+				if (fAimDownSight) {
+//					do nothing					
+				}
+				else {
+//					do nothing							
+				}
+			}
 
 			if (fLowOxygen != lLowOxygen) {
 				if (fLowOxygen) {
@@ -993,7 +994,7 @@
 					DeferCall(1000, &fnVPOutput, "Its a bit nippie");					
 				}
 				else {
-					//	nothing to do 								
+//					nothing to do 								
 				}
 			}
 
@@ -1002,7 +1003,7 @@
 					DeferCall(1000, &fnVPOutput, "Its getting warm!");					
 				}
 				else {
-					//	nothing to do 									
+//					nothing to do 									
 				}
 			}
 
@@ -1011,7 +1012,7 @@
 					DeferCall(1000, &fnVPOutput, "Its bloody freezing!");					
 				}
 				else {
-					//	nothing to do 
+//					nothing to do 
 				}
 			}
 
@@ -1020,7 +1021,7 @@
 					DeferCall(1000, &fnVPOutput, "Geezz its flamin hot");					
 				}
 				else {
-					//	nothing to do 							
+//					nothing to do 							
 				}
 			}
 
@@ -1074,7 +1075,7 @@
 					printf("Telepresence multi crew detected\x0a");						
 				}
 				else {
-					//	nothing to do 
+//					nothing to do 
 				}
 			}
 
@@ -1083,7 +1084,7 @@
 					printf("Physical multi crew detected\x0a");	
 				}
 				else {
-					//	nothing to do 
+//					nothing to do 
 				}
 			}
 
@@ -1092,7 +1093,7 @@
 					printf("FSD Hyperdrive Charging\x0a");					
 				}
 				else {
-					// FSD Hyperdrive no longer charging									
+//					FSD Hyperdrive no longer charging									
 				}
 			}
 
@@ -1221,7 +1222,7 @@
 			MyStates.sDismissed 		=	ShipDismissed;
 			MyStates.sCurves			=	OldCurves;
 			MyStates.sLEDLevel			=	LEDLevel;
-			MyStates.sMaxJsonLength 	= 	NewMaxJson;
+			MyStates.sMaxJsonLength 	= 	NewMaxJson;					// I save a copy of status.json as NewMaxJson.json via stfnWriteMaxJson() above
 			MyStates.sPIPMode			=	PIPMode;
 			
 			fh = fopen(&MyStatusFile, "w");								// creates the file if it doesn't exist
@@ -1268,7 +1269,7 @@
 					OldCurves		= MyStates.sCurves;
 					LEDLevel		= MyStates.sLEDLevel;
 					NewMaxJson		= MyStates.sMaxJsonLength;
-//					NewMaxJson		= 0;								// To reset NewMaxJson, uncooment this line and comment out the line immediately above.
+//					NewMaxJson		= 0;								// To reset NewMaxJson, uncomment this line and comment out the line immediately above it.
 																		// Start then stop the game, then undo this, save and recompile
 					PIPMode			= MyStates.sPIPMode;
 					
