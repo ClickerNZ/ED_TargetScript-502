@@ -159,7 +159,6 @@
 				if (!fLights) {				// Transition: Off to LO
 					lstate = "LO";
 					arrows = ">>";
-//					fnVPOutput("SRV Lights ON");
 				}
 				else {
 					if (fSRVHiBeam) {		// Transition: HI to OFF
@@ -334,7 +333,7 @@
 //			ReverseThrust = !ReverseThrust;													// Internal state flag 
 			if (ReverseThrust) {
 				printf("Throttle:			REVERSE	>>\x0a");
-				AutoRepeat(hBeepFX, 1000, &fnSoundFX, 0);									// wavfile = 0 causes wavfile to be set to "beep"
+				AutoRepeat(hBeepFX, 1000, &fnSoundFX, 0);									// wavfile = 0 causes wavfile to be set to "beep" within fnSoundFX
 				
 				// TOGGLE: Speedbrake
 				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {						// If PSF OR (hardpoints deployed AND Gear Retracted)...
@@ -357,7 +356,8 @@
 		}
 	}
 
-	// TOGGLE:	Engine Boost in normal flight mode. Activate/Deactivate Supercruise Over Charge when in Supercruise 
+	// TOGGLE:	Engine Boost in normal flight mode. 
+	//			Activate/Deactivate SuperCruise Overcharge when in Supercruise 
 	
 	int tgBoost() {
 		int fnName = "Engine Boost";		/////// DOES THIS WORK IN THE FIGHTER ???  ///////
@@ -468,15 +468,13 @@
 	int tgPlanetView() {
 		int fnName = "Toggle Planet View";
 		int reason;
-		int VoiceTxt;
 
 		stfnProcessGuiFocus();									// Get SAAMode flag		
 		
 		if (SAAMode) {
 			ActKey(PULSE+KEYON+FBView);
 			printf("Planet View:	TOGGLED		<>\x0a");
-			VoiceTxt = "Toggle planet view";
-			fnTextToSpeech(VoiceTxt);
+			fnTextToSpeech("Toggle planet view");
 		}
 		else {
 			reason = "must be in SAA Mode";
