@@ -33,32 +33,31 @@
 //			Line 316: 	int fnTextToSpeech()
 //			Line 348: 	int fnVoiceVolume()
 //			Line 401: 	int fnSoundFX()
-//			Line 417: 	int fnGameStarted()
-//			Line 511: 	int fnPIPMode()
-//			Line 562: 	int fnPIPManager()
-//			Line 599: 	int fnPIPMapper()
-//			Line 639: 	int fnAdvFireControl()
-//			Line 712: 	int fnAdvancedSCB()
-//			Line 744: 	int fnHeatsink()
-//			Line 760: 	int fnChaff()
-//			Line 778: 	int fnDeploySRV()
-//			line 822:	int fnDRShip()
-//			Line 851: 	int fnRequestDock()
-//			Line 873: 	int fnHangerServices()
-//			Line 917:	int fnIdleLock()
-//			Line 949:	int fnCheckFSDCharge()
-//			Line 981:	int fnCheckFSDMassLocked()
-//			Line 1010:	int fnClearChatBox()
-//			Line 1065: 	int fnModeSwitch()
-//			Line 1125:	int fnReverseBeep()
-//	X		Line 1124:	int fnVPOutput()
-//	X		Line 1136: 	int fnPrintState()
-//	X		Line 1147: 	int fnStateDump()
-//	X		Line 1310: 	int fnDebug()
-//	X		Line 1335:	int fnGetTOD()
-//	X		Line 1353:	int fnGetDate()
-//	X		Line 1376:	int findstr()
-//	X		Line 1403:	int ModKey()			// not used
+//			Line 418: 	int fnGameStarted()
+//			Line 512: 	int fnPIPMode()
+//			Line 563: 	int fnPIPManager()
+//			Line 600: 	int fnPIPMapper()
+//			Line 640: 	int fnAdvFireControl()
+//			Line 713: 	int fnAdvancedSCB()
+//			Line 745: 	int fnHeatsink()
+//			Line 761: 	int fnChaff()
+//			Line 779: 	int fnDeploySRV()
+//			line 823:	int fnDRShip()
+//			Line 852: 	int fnRequestDock()
+//			Line 874: 	int fnHangerServices()
+//			Line 918:	int fnIdleLock()
+//			Line 950:	int fnCheckFSDCharge()
+//			Line 982:	int fnCheckFSDMassLocked()
+//			Line 1011:	int fnClearChatBox()
+//			Line 1066: 	int fnModeSwitch()
+//			Line 1125:	int fnVPOutput()
+//			Line 1137: 	int fnPrintState()
+//			Line 1148: 	int fnStateDump()
+//			Line 1311: 	int fnDebug()
+//			Line 1336:	int fnGetTOD()
+//			Line 1354:	int fnGetDate()
+//			Line 1377:	int findstr()
+//			Line 1404:	int ModKey()			// not used
 
 //------------------//
 // CUSTOM FUNCTIONS //
@@ -296,22 +295,22 @@
 	//				Optional 'VolumeOverride' to override current volume setting
 	//				Optional 'Voice' to use. DeafaultVoice set in ED_UserSettings. 'Voice' parameter must match a currently installed MS Voice
 	//				See ED_UserSettings file for more information
-
+	//
 	// SerialText:	If this global flag is set prior to calling this function, speech commands are processed serially and the script will wait until the call finishes
 	//				This causes a delay in Joystick, Throttle, Pedals and switch processing and will have an in-game inpact
 	//				When set to 0, when this function is called multiple times in quick succession the second and subsequent calls result in speech overlap
-
+	//
 	// Usage1:		fnTextToSpeech("This is test number 1");	// says the text at current value of 'VoiceVolume' in %
-	
+	//
 	// Usage2:		int VoiceTxt = "This is test number 2";
 	//				fnTextToSpeech(VoiceTxt, 100);				// says the text at 100% volume
-	
+	//
 	// Usage3:		char VoiceTxt; Dim(&VoiceTxt, 16); VoiceTxt[0] = 0;
 	//				int tString = "This is test ";
 	//				int test = 3;
 	//				sprintf(&VoiceTxt, "%s number %d", tString, test);
 	//				fnTextToSpeech(&VoiceTxt, 50);				//says the text at 50% volume 
-	
+	//
 	// Usage4:		fnTextToSpeech("Test number 4", 0, &David);	//says the text at default volume using "David" voice
 
 	int fnTextToSpeech(int text, int VolumeOverride=0, int Voice=DefaultVoice) {
