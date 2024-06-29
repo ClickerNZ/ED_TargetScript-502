@@ -20,6 +20,7 @@ v5.0.2	- New Point Release
 			- Track json length and announce when new max length found
 			- include NewMaxJson variable to save/reload
 			- lots of minor cosmetic changes
+		- tweak fnSoundFX(). create global variables for volume and loops to allow setting prior to using AutoRepeat() (if reqd)
 
 
 v5.0.1	- New Point Release
