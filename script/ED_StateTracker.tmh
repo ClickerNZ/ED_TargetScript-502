@@ -94,7 +94,7 @@
 				if (loop == 9) {
 					if(maxjson > NewMaxJson) {
 						printf("\x0a\				-=+=- Max json length seen = %d -=+=-\x0a", maxjson);
-						fnSoundFX("snd_warn", 100);
+						fnSoundFX("snd_warn");
 						NewMaxJson = maxjson;
 
 						json100 = (NewMaxJson - (NewMaxJson % 100))/100;
