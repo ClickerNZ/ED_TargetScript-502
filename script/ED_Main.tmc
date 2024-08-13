@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------//
 
 // This file:	ED_Main.tmc 		v502.01
-// Supports:	Elite Dangerous 	v4.0.0.1807 (Odyssey)
+// Supports:	Elite Dangerous 	v4.0.0.1808 (Odyssey)
 // Requires:	TARGET 				v3.0.24.618_rev1
 //				Joystick firmware	v12
 //				Throttle firmware 	v23
@@ -98,11 +98,12 @@ include "ED_Toggles.tmh"
 	int main() {
 	
 		printf("\x0a\++	Exclude unwanted controllers	...	");					// Eliminates error messages relating to unfound devices
-																				// Check target.tmh alias list			
+																				// Check target.tmh alias list
+																				
 		Exclude(&HCougar);
 		Exclude(&T16000);
 		Exclude(&T16000L);
-		Exclude(&JoystickF18);
+//		Exclude(&JoystickF18);													// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
 		Exclude(&TWCSThrottle);
 		Exclude(&TFRPHARudder);
 		Exclude(&LMFD);
@@ -114,12 +115,14 @@ include "ED_Toggles.tmh"
 		Exclude(&TCAQBoeing12);
 		Exclude(&TCAQBoeing34);
 		Exclude(&TCAYokeBoeing);
-		Exclude(&ViperTQS);
-		Exclude(&ViperBBox);
+		Exclude(&ViperTQS);														// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
+		Exclude(&ViperBBox);													// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
 		Exclude(&TCASidestickXPilot);
 		Exclude(&TCASidestickXCopilot);
 		Exclude(&FarmStickRight);
 		Exclude(&FarmStickLeft);
+//		Exclude(&AVA_F16);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
+//		Exclude(&AVA_F18);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
 		
 		if (EnableTFRPRudder) {													// (see ED_UserSettings.tmh)
 			Configure(&TFRPRudder, MODE_FILTERED);
