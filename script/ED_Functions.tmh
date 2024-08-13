@@ -1145,7 +1145,7 @@
 	int fnPrintState() {
 
 		printf("\x0a");
-		printf("SCRIPT LOADED:	v%d%d%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint);
+		printf("SCRIPT LOADED:	v%d%d%d.%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint, VBranch);
 		printf("==================================================================================\x0a");
 		printf("USER PREFERENCES: JS-Curves: %s     DX-Slider Curve: %d     PIPMode(%d): %s     LED Level: %d\x0a\x0a", JSCurveSetting, DXCurveSetting, PIPMode, PIPTxt, LEDLevel);
 		fnStateDump();
