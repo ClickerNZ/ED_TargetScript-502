@@ -36,7 +36,7 @@
 
 	// FUNCTION: Initialise Joystick Axes 
 	int initJoystickAxis() { 																	// Set Default Joystick Axis
-		printf("\x0a\Initialising: v%d.%d.%s\x0a", VMajor, VMinor, VPoint);
+		printf("\x0a\Initialising: v%d%d%d.%s\x0a", VMajor, VMinor, VPoint, VBranch);
 		printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
 		MapAxis(&Joystick, JOYX, DX_X_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
 		MapAxis(&Joystick, JOYY, DX_Y_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
