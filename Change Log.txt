@@ -21,6 +21,7 @@ v5.0.2	- New Point Release
 			- include NewMaxJson variable to save/reload
 			- lots of minor cosmetic changes
 		- tweak fnSoundFX(). create global variables for volume and loops to allow setting prior to using AutoRepeat() (if reqd)
+		- Update for new version of TARGET and exclude new AVA_F16 and AVA_F18 base/stick combos.
 
 
 v5.0.1	- New Point Release
