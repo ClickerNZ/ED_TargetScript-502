@@ -3,7 +3,7 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
-// This file: ED_Functions.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+// This file: ED_Functions.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
 
 // Refer Change Log.txt in parent folder
 
@@ -120,20 +120,20 @@
 		}
 		
 		// Set Joystick curves and force re-read of axes
-		SetSCurve(&Joystick, JOYX,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
-		SetSCurve(&Joystick, JOYY,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
-		DefEventHandler(EV_HID_INPUT_DATA, &Joystick, JOYX);
-		DefEventHandler(EV_HID_INPUT_DATA, &Joystick, JOYY);
+		SetSCurve(&MyJoystick, JOYX,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
+		SetSCurve(&MyJoystick, JOYY,		Joystick_L_DZ,	Joystick_C_DZ,	Joystick_R_DZ,	Joystick_Curve[profile],	Joystick_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &MyJoystick, JOYX);
+		DefEventHandler(EV_HID_INPUT_DATA, &MyJoystick, JOYY);
 
 		// Set Rudder curve and force re-read of axis
-		SetSCurve(&TFRPRudder, TRUDDER, Rudder_L_DZ,	Rudder_C_DZ,	Rudder_R_DZ,	Rudder_Curve[profile],	Rudder_Zoom);
-		DefEventHandler(EV_HID_INPUT_DATA, &TFRPRudder, TRUDDER);
+		SetSCurve(&MyRudder, TRUDDER, Rudder_L_DZ,	Rudder_C_DZ,	Rudder_R_DZ,	Rudder_Curve[profile],	Rudder_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &MyRudder, TRUDDER);
 
 		// Set Slew Control curves and force re-read of axes 
-		SetSCurve(&Throttle, SCX, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
-		SetSCurve(&Throttle, SCY, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
-		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, SCX);
-		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, SCY);
+		SetSCurve(&MyThrottle, SCX, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
+		SetSCurve(&MyThrottle, SCY, 		Slew_L_DZ,		Slew_C_DZ,		Slew_R_DZ,		Slew_Curve[profile],		Slew_Zoom);
+		DefEventHandler(EV_HID_INPUT_DATA, &MyThrottle, SCX);
+		DefEventHandler(EV_HID_INPUT_DATA, &MyThrottle, SCY);
 
 
 		if (StartupLock) {
@@ -164,22 +164,22 @@
 		int SliderCurve;												// Used to define the LIST and can use within EXEC
 		
 		if (x == 0) {													// FSS Mode Radar
-			SetJCurve(&Throttle, THR_FC, 50, 50);						// Linear progression. Low sensitivity
+			SetJCurve(&MyThrottle, THR_FC, 50, 50);						// Linear progression. Low sensitivity
 			SliderProfile = "FSS Mode";
 		}
 		if (x == 1)	{													// Normal flight
 			SliderCurve = LIST(0,0, 40,25, 75,50, 85,75, 100,100);
-			SetCustomCurve(&Throttle, THR_FC, SliderCurve);
+			SetCustomCurve(&MyThrottle, THR_FC, SliderCurve);
 			SliderProfile = "Normal Flight";
 			
 		}
 		if (x == 2)	{													// Supercruise
 			SliderCurve = LIST(0,0, 50,10, 75,30, 90,50, 100,100);
-			SetCustomCurve(&Throttle, THR_FC, SliderCurve);
+			SetCustomCurve(&MyThrottle, THR_FC, SliderCurve);
 			SliderProfile = "Supercruise";
 		}
 		
-		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, THR_FC);			// Forces re-read of slider axis
+		DefEventHandler(EV_HID_INPUT_DATA, &MyThrottle, THR_FC);			// Forces re-read of slider axis
 
 		if (!StartupLock) {
 			printf("Slider Curve Profile:	[%d] %s\x0a", x, SliderProfile);
@@ -217,7 +217,7 @@
 			if (LEDLevel < 0) LEDLevel = 5;								// Wraps around to 5 if < 0
 		}
 		SetLED = (42*LEDLevel)+LEDLevel;
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_INTENSITY, SetLED));		// Set LED brightness to selected level
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_INTENSITY, SetLED));		// Set LED brightness to selected level
 		if (!StartupLock) {
 			printf("LED Brightness [Level %d]:	%d\x0a", LEDLevel, SetLED);
 		}
@@ -231,12 +231,12 @@
 		int counter = 0;
 		if (FlashLEDs) {
 			while (counter < 11) {																		// Odd number TOGGLES LED.
-				DeferCall(counter*100, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^x));	// Loop effectively issues 'counter' DeferCalls at ~100 mSec apart
+				DeferCall(counter*100, &ActKey, PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT^x));	// Loop effectively issues 'counter' DeferCalls at ~100 mSec apart
 				counter = counter + 1;
 			}
 		}
 		else {
-			ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^x));								// No Flash, just toggle the LED on or off
+			ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT^x));								// No Flash, just toggle the LED on or off
 		}
 	}
 
@@ -246,12 +246,12 @@
 	
 	int fnSetLEDs(int dummy=NUL) {
 	
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT+LED0)); 		// set GLOBAL LED ON, then...
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED1)); 		// set LED 1 OFF
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED2)); 		// set LED 2 OFF
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED3)); 		// set LED 3 OFF
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED4)); 		// set LED 4 OFF
-		ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED5)); 		// set LED 5 OFF
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT+LED0)); 		// set GLOBAL LED ON, then...
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED1)); 		// set LED 1 OFF
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED2)); 		// set LED 2 OFF
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED3)); 		// set LED 3 OFF
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED4)); 		// set LED 4 OFF
+		ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED5)); 		// set LED 5 OFF
 
 		if (Flags != 0) {
 			if (fFAOff) {
@@ -280,8 +280,8 @@
 		
 		if (FlashLEDs) {
 			while (i < 5) {
-				DeferCall(200*i, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^LED0));
-				DeferCall((200*i)+100, &ActKey, PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT^LED0));
+				DeferCall(200*i, &ActKey, PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT^LED0));
+				DeferCall((200*i)+100, &ActKey, PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT^LED0));
 				i = i + 1;
 			}
 		}
@@ -389,6 +389,9 @@
 	// Parameter:	wavfile = Name of wav file to be played. '.wav' is optional
 	//				vol = volume% (some wav files are much quieter than others), default = 100%
 	//				loops = times to play sound, default = 1
+	//
+	//				Alternately GLOBAL VARS SFXVol and SFXLoops can be set before calling this function
+	//
 	// Requires:	SoundPath alias to be correctly set in usersettings file
 	//				WAVPath alias to be correct set in usersettings file
 	//				<wavfile>.wav to exist inside WAVPath
@@ -398,14 +401,19 @@
 	// Example:		fnSoundFX("wding", 75, 5);	// will play 'wding.wav' at 75% volume 5 times
 	//				fnSoundFX("tada");			// will play 'tada.wav' at 100% volume once
 	
+	//GLOBAL VARS
+	int SFXVol = 100;
+	int SFXLoops = 1;
+
 	int fnSoundFX(int wavfile, int vol=100, int loops=1) {
 
 		char SFXSysCmd; Dim(&SFXSysCmd, 255);	SFXSysCmd[0] = NUL;			// Increase buffer size if required
 		
 		if (EnableSoundFX) {
-			if (wavfile == 0) wavfile = "beep";
+			if (vol != 100) SFXVol = vol;										// set SFXVol if vol is parsed
+			if (loops != 1) SFXLoops = loops;									// set SFXLoops if loops is parsed
 			
-			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
+			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, SFXVol, SFXLoops, &WAVPath, wavfile);
 			SFXSysCmd[strlen(&SFXSysCmd)] = NUL;							// terminate char array 
 
 			system(&SFXSysCmd);										// send command to Windows			
@@ -427,22 +435,22 @@
 		GameLoaded = YES;
 		StartupLock = OFF;
 
-		DefEventHandler(EV_HID_INPUT_DATA, &Throttle, THR_FC);			// Forces re-read of slider axis								
+		DefEventHandler(EV_HID_INPUT_DATA, &MyThrottle, THR_FC);			// Forces re-read of slider axis								
 		
 		fnFlashStart();													// Flash LEDs on Throttle Base to alert user game has started
 		
-		if (Throttle[EACON] | Throttle[RDRNRM] | Throttle[SPDF]) {
+		if (MyThrottle[EACON] | MyThrottle[RDRNRM] | MyThrottle[SPDF]) {
 			// Align toggle switches and internal status flags if required
-			if (Throttle[EACON])	DeferCall(1000, &tgSilentRunning,	ON);		//MAYBE NOT NEEDED if moved to stfnProcessFlags() like CargoScoop code	
-			if (Throttle[RDRNRM])	DeferCall(1750, &tgCargoScoop,		DEPLOY);	//MAYBE NOT NEEDED now checked in stfnProcessFlags()	
-			if (Throttle[SPDF])		DeferCall(2500, &tgReverseThrust,	OFF);       //Cannot avoid this one as there is no FLAGS bit for this
+			if (MyThrottle[EACON])	DeferCall(1000, &tgSilentRunning,	ON);		//MAYBE NOT NEEDED if moved to stfnProcessFlags() like CargoScoop code	
+			if (MyThrottle[RDRNRM])	DeferCall(1750, &tgCargoScoop,		DEPLOY);	//MAYBE NOT NEEDED now checked in stfnProcessFlags()	
+			if (MyThrottle[SPDF])		DeferCall(2500, &tgReverseThrust,	OFF);       //Cannot avoid this one as there is no FLAGS bit for this
 		}
 		else DeferCall(1100, &fnSetLEDs, NUL);
 	
 		// Align Joystick curves
-		if (Throttle[APPAT])	fnSetCurves(MILD, NOPRINT, FALSE);		// Don't print to console or announce curve setting
-		if (Throttle[APAH])		fnSetCurves(NONE, NOPRINT, FALSE);		// Don't print to console or announce curve setting
-		if (Throttle[APALT])	fnSetCurves(SLOW, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		if (MyThrottle[APPAT])	fnSetCurves(MILD, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		if (MyThrottle[APAH])		fnSetCurves(NONE, NOPRINT, FALSE);		// Don't print to console or announce curve setting
+		if (MyThrottle[APALT])	fnSetCurves(SLOW, NOPRINT, FALSE);		// Don't print to console or announce curve setting
 		
 		if (fDocked) 			InHanger = YES;
 		
@@ -1137,7 +1145,7 @@
 	int fnPrintState() {
 
 		printf("\x0a");
-		printf("SCRIPT LOADED:	v%d%d%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint);
+		printf("SCRIPT LOADED:	v%d%d%d.%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint, VBranch);
 		printf("==================================================================================\x0a");
 		printf("USER PREFERENCES: JS-Curves: %s     DX-Slider Curve: %d     PIPMode(%d): %s     LED Level: %d\x0a\x0a", JSCurveSetting, DXCurveSetting, PIPMode, PIPTxt, LEDLevel);
 		fnStateDump();
