@@ -3,7 +3,7 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
-// This file: ED_Functions.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+// This file: ED_Functions.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
 
 // Refer Change Log.txt in parent folder
 
@@ -389,6 +389,9 @@
 	// Parameter:	wavfile = Name of wav file to be played. '.wav' is optional
 	//				vol = volume% (some wav files are much quieter than others), default = 100%
 	//				loops = times to play sound, default = 1
+	//
+	//				Alternately GLOBAL VARS SFXVol and SFXLoops can be set before calling this function
+	//
 	// Requires:	SoundPath alias to be correctly set in usersettings file
 	//				WAVPath alias to be correct set in usersettings file
 	//				<wavfile>.wav to exist inside WAVPath
@@ -398,14 +401,19 @@
 	// Example:		fnSoundFX("wding", 75, 5);	// will play 'wding.wav' at 75% volume 5 times
 	//				fnSoundFX("tada");			// will play 'tada.wav' at 100% volume once
 	
+	//GLOBAL VARS
+	int SFXVol = 100;
+	int SFXLoops = 1;
+
 	int fnSoundFX(int wavfile, int vol=100, int loops=1) {
 
 		char SFXSysCmd; Dim(&SFXSysCmd, 255);	SFXSysCmd[0] = NUL;			// Increase buffer size if required
 		
 		if (EnableSoundFX) {
-			if (wavfile == 0) wavfile = "beep";
+			if (vol != 100) SFXVol = vol;										// set SFXVol if vol is parsed
+			if (loops != 1) SFXLoops = loops;									// set SFXLoops if loops is parsed
 			
-			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, vol, loops, &WAVPath, wavfile);
+			sprintf(&SFXSysCmd, "start %s %s /vol %d /loop %d %s%s", &SoundPath, &SoundCMD, SFXVol, SFXLoops, &WAVPath, wavfile);
 			SFXSysCmd[strlen(&SFXSysCmd)] = NUL;							// terminate char array 
 
 			system(&SFXSysCmd);										// send command to Windows			
@@ -1137,7 +1145,7 @@
 	int fnPrintState() {
 
 		printf("\x0a");
-		printf("SCRIPT LOADED:	v%d%d%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint);
+		printf("SCRIPT LOADED:	v%d%d%d.%s     TARGET Mappings, Macros & Functions Loaded \x0a", VMajor, VMinor, VPoint, VBranch);
 		printf("==================================================================================\x0a");
 		printf("USER PREFERENCES: JS-Curves: %s     DX-Slider Curve: %d     PIPMode(%d): %s     LED Level: %d\x0a\x0a", JSCurveSetting, DXCurveSetting, PIPMode, PIPTxt, LEDLevel);
 		fnStateDump();

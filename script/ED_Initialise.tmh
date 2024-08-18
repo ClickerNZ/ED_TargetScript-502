@@ -3,7 +3,7 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
-// This file: ED_Initialise.tmh (v5.0.2) ... supports Elite Dangerous (Odyssey)
+// This file: ED_Initialise.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
 
 // Refer Change Log.txt in parent folder
 
@@ -36,7 +36,7 @@
 
 	// FUNCTION: Initialise Joystick Axes 
 	int initJoystickAxis() { 																	// Set Default Joystick Axis
-		printf("\x0a\Initialising: v%d.%d.%s\x0a", VMajor, VMinor, VPoint);
+		printf("\x0a\Initialising: v%d%d%d.%s\x0a", VMajor, VMinor, VPoint, VBranch);
 		printf("-----------------------------------------------------------------------------------------------------------------------------------------------\x0a");
 		MapAxis(&Joystick, JOYX, DX_X_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
 		MapAxis(&Joystick, JOYY, DX_Y_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);
