@@ -334,7 +334,7 @@
 			if (ReverseThrust) {
 				printf("Throttle:			REVERSE	>>\x0a");
 				
-				AutoRepeat(hBeepFX, 1000, &fnSoundFX, "beep");								// wavfile = 0 causes wavfile to be set to "beep" within fnSoundFX
+				AutoRepeat(hBeepFX, 1000, &fnSoundFX, "beep");								// Sound Reversing "beep" until reverse cancelled
 				
 				// TOGGLE: Speedbrake
 				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {						// If PSF OR (hardpoints deployed AND Gear Retracted)...
