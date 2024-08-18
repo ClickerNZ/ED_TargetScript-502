@@ -1,6 +1,13 @@
 // CMDR Clicker Thrustmaster TARGET Script Change Log //
 
-v5.0.2	- New Point Release
+v502.02 - Replace legacy TARGET aliases as per;
+			- &Joystick replaced by &MyJoystick
+			- &Throttle rpllaced by &MyThrottle
+			- &TFRPRudder replaced by &MyRudder
+		- Include check code in main and assign above aliases with compatible Thrusmaster hardware aliases
+		- Remove excludes for compatible thrustmaster hardware 
+
+v502.01	- New Point Release
 		- Many changes and enhancements
 		- Re-Index
 		- Fix FSD cooldown logic
@@ -20,6 +27,9 @@ v5.0.2	- New Point Release
 			- Track json length and announce when new max length found
 			- include NewMaxJson variable to save/reload
 			- lots of minor cosmetic changes
+		- tweak fnSoundFX(). create global variables for volume and loops to allow setting prior to using AutoRepeat() (if reqd)
+		- Update for new version of TARGET and exclude new AVA_F16 and AVA_F18 base/stick combos.
+		- Fix printf for script version
 
 
 v5.0.1	- New Point Release
