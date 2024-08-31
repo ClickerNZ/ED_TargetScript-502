@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
 // This file: ED_StateTracker.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
+// This file: ED_StateTracker.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Refer Change Log.txt parent folder
 

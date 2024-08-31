@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
 // This file: ED_ScriptDefines.ttm (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
+// This file: ED_ScriptDefines.ttm (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Below are the global, static, state and boolean definitions used within the script package
 // Also contains global status.json integer variable flags for ease of maintenance and readability
@@ -45,7 +49,11 @@
 	define VMajor		 						5						// Script Version Major Value			ie. 2xx
 	define VMinor		 						0						// Script Version Minor Value			ie. x3x
 	define VPoint								2						// Script Version Point Update			ie. xx4
+<<<<<<< HEAD
 	define VBranch								"02"					// Script Version Branch				ie. xxx.01
+=======
+	define VBranch								"01"					// Script Version Branch				ie. xxx.01
+>>>>>>> main
 
 
 //---------//
