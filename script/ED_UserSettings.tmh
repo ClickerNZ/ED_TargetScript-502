@@ -210,7 +210,7 @@
 
 	define	FAOFFCurves			SLOW					// Set Curve profile desired for FA-OFF. Valid settings = OFF, MILD, MEDIUM or SLOW (see below) 
 	define	CurveInfo			NOPRINT					// Set if you want curve info printed to console each time we change. Valid settings = PRINT or NOPRINT
-//	define	EnableMyRudder		ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP or TFRPHA Rudder.
+	define	EnableMyRudder		ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP or TFRPHA Rudder.
 	define	SwapRoll4Yaw		DISABLED				// Set to ENABLED if you wish to set X-Axis to Yaw (Default = Roll)
 
 	// The below curve arrays are set for "off", "mild", "medium" or "slow" and controlled via the Autopilot switch
