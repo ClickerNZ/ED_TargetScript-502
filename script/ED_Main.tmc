@@ -104,9 +104,7 @@ include "ED_Toggles.tmh"
 		Exclude(&HCougar);
 		Exclude(&T16000);
 		Exclude(&T16000L);
-//		Exclude(&JoystickF18);													// Leave included.
 		Exclude(&TWCSThrottle);
-//		Exclude(&TFRPHARudder);													// Leave included.
 		Exclude(&LMFD);
 		Exclude(&RMFD);
 		Exclude(&A320Pilot);
@@ -122,8 +120,6 @@ include "ED_Toggles.tmh"
 		Exclude(&TCASidestickXCopilot);
 		Exclude(&FarmStickRight);
 		Exclude(&FarmStickLeft);
-//		Exclude(&AVA_F16);														// Leave included.
-//		Exclude(&AVA_F18);														// Leave included.
 		
 		if (EnableMyRudder) {													// (see ED_UserSettings.tmh)
 			Configure(&TFRPRudder, MODE_FILTERED);
@@ -143,9 +139,9 @@ include "ED_Toggles.tmh"
 // -------------------------------------------------- //
 
 		// Aliases MyJoystick, MyThrottle and MyRudder declared in ED_GlobalVars.tmh
-		// The following method eliminates user having to set connected hardware manually
+		// The following method eliminates user having to set compatible connected hardware manually
 		// Alternate method would be to get user to declare which alias to use depending on what hardware they own
-
+		
 		// There are 4 Joystick combos compatible with this script...
 		&MyJoystick = &joy0;		
 		if (&Joystick != &joy0) {
@@ -162,7 +158,7 @@ include "ED_Toggles.tmh"
 		}
 		else if (&AVA_F18 != &joy0) {
 			&MyJoystick = &AVA_F18;
-			printf("++	Connected joystick	is AVA Base + F16 Flight stick.\x0a");
+			printf("++	Connected joystick	is AVA Base + F18 Flight stick.\x0a");
 		}
 		else {
 			printf("\x0a\	///////////////////////////////////////////////////////////////////////////////\x0a\x0a");
