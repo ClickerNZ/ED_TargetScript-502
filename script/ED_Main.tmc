@@ -72,7 +72,7 @@ include "target.tmh"
 ///                                                                       ///
 ///    !!! DO NOT EDIT TARGET.TMH, DEFINES.TMH, SYS.TMH OR HID.TMH !!!    ///
 ///                                                                       ///
-///                 unless you know what you are doing                    ///
+///                (unless you know what you are doing)                   ///
 ///                                                                       ///
 /////////////////////////////////////////////////////////////////////////////
 
@@ -126,7 +126,7 @@ include "ED_Toggles.tmh"
 //		Exclude(&AVA_F18);														// Leave included.
 		
 		if (EnableMyRudder) {													// (see ED_UserSettings.tmh)
-//			Configure(&TFRPRudder, MODE_FILTERED);
+			Configure(&TFRPRudder, MODE_FILTERED);
 		}
 		else {
 			Exclude(&TFRPRudder);
