@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
+// This file:	ED_Main.tmc 		v502.02
+=======
 // This file:	ED_Main.tmc 		v502.01
+>>>>>>> main
 // Supports:	Elite Dangerous 	v4.0.0.1808 (Odyssey)
 // Requires:	TARGET 				v3.0.24.618_rev1
 //				Joystick firmware	v12
@@ -72,7 +76,7 @@ include "target.tmh"
 ///                                                                       ///
 ///    !!! DO NOT EDIT TARGET.TMH, DEFINES.TMH, SYS.TMH OR HID.TMH !!!    ///
 ///                                                                       ///
-///                 unless you know what you are doing                    ///
+///                (unless you know what you are doing)                   ///
 ///                                                                       ///
 /////////////////////////////////////////////////////////////////////////////
 
@@ -95,17 +99,24 @@ include "ED_Toggles.tmh"
 // program startup //
 // --------------- //
 
+
 	int main() {
 	
+<<<<<<< HEAD
+		printf("\x0a\++	Initialise hardware	...	Start	++\x0a\x0a");			// Eliminates error messages relating to unfound devices
+=======
 		printf("\x0a\++	Exclude unwanted controllers	...	");					// Eliminates error messages relating to unfound devices
+>>>>>>> main
 																				// Check target.tmh alias list
 																				
 		Exclude(&HCougar);
 		Exclude(&T16000);
 		Exclude(&T16000L);
+<<<<<<< HEAD
+=======
 //		Exclude(&JoystickF18);													// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
+>>>>>>> main
 		Exclude(&TWCSThrottle);
-		Exclude(&TFRPHARudder);
 		Exclude(&LMFD);
 		Exclude(&RMFD);
 		Exclude(&A320Pilot);
@@ -115,8 +126,13 @@ include "ED_Toggles.tmh"
 		Exclude(&TCAQBoeing12);
 		Exclude(&TCAQBoeing34);
 		Exclude(&TCAYokeBoeing);
+<<<<<<< HEAD
+		Exclude(&ViperTQS);														// Throttle Quadrant System - If used may require recode for &MyThrottle alias if different from standard WARTHOG
+		Exclude(&ViperBBox);													// Throttle Quadrant System - If used may require recode for &MyThrottle alias if different from standard WARTHOG
+=======
 		Exclude(&ViperTQS);														// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
 		Exclude(&ViperBBox);													// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
+>>>>>>> main
 		Exclude(&TCASidestickXPilot);
 		Exclude(&TCASidestickXCopilot);
 		Exclude(&FarmStickRight);
@@ -124,40 +140,108 @@ include "ED_Toggles.tmh"
 //		Exclude(&AVA_F16);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
 //		Exclude(&AVA_F18);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
 		
-		if (EnableTFRPRudder) {													// (see ED_UserSettings.tmh)
+		if (EnableMyRudder) {													// (see ED_UserSettings.tmh)
 			Configure(&TFRPRudder, MODE_FILTERED);
 		}
 		else {
 			Exclude(&TFRPRudder);
+			Exclude(&TFRPHARudder);
 		}
 		
-		printf("done	++\x0a\x0a");
 		printf("++	Connect our controllers ... \x0a\x0a");
-		
+
 		if(Init(&EventHandle)) return 1;
 				
-// ---------------------------------------- //
-// Initialise LEDs, variables and functions //
-// ---------------------------------------- //
-	
-		printf("\x0a\++	Initialise hardware	...	Start	++\x0a"); 
+				
+// -------------------------------------------------- //
+// Initialise Hardware, LEDs, variables and functions //
+// -------------------------------------------------- //
 
-		SetShiftButton(&Joystick, S3, &Throttle, PSF, PSB);						// ** DO NOT TOUCH **  Joystick Nosewheel Switch (S3) = IO, Throttle pinky switch (PSF/PSB) = UMD
+		// Aliases MyJoystick, MyThrottle and MyRudder declared in ED_GlobalVars.tmh
+		// The following method eliminates user having to set compatible connected hardware manually
+		// Alternate method would be to get user to declare which alias to use depending on what hardware they own
+		
+		// There are 4 Joystick combos compatible with this script...
+		&MyJoystick = &joy0;		
+		if (&Joystick != &joy0) {
+			&MyJoystick = &Joystick;
+			printf("\x0a\++	Connected joystick	is WARTHOG Base + F16 Flight stick.\x0a");
+		}
+		else if (&JoystickF18 != &joy0) {
+			&MyJoystick = &JoystickF18;
+			printf("++	Connected joystick	is WARTHOG Base + F18 Flight stick.\x0a");
+		}
+		else if (&AVA_F16 != &joy0) {
+			&MyJoystick = &AVA_F16;		
+			printf("++	Connected joystick	is AVA Base + F16 Flight stick.\x0a");
+		}
+		else if (&AVA_F18 != &joy0) {
+			&MyJoystick = &AVA_F18;
+			printf("++	Connected joystick	is AVA Base + F18 Flight stick.\x0a");
+		}
+		else {
+			printf("\x0a\	///////////////////////////////////////////////////////////////////////////////\x0a\x0a");
+			printf("	!!! WARNING:	This script will not run without a compatible Joystick connected\x0a\x0a");
+			printf("	///////////////////////////////////////////////////////////////////////////////\x0a\x0a");
+			printf("	Please connect one of the following compatible JOYSTICKS:-\x0a");
+			printf("	1) WARTHOG Base with F16 Flight stick\x0a");
+			printf("	2) WARTHOG Base with F18 Flight stick\x0a");
+			printf("	3) AVA Base with F16 Flight stick\x0a");
+			printf("	4) AVA Base with F18 Flight stick\x0a");			
+			Abort();
+		}
+
+		// There is only one Throttle compatible with this script...
+		&MyThrottle = &joy0;		
+		if (&Throttle == &joy0) {
+			printf("\x0a\	/////////////////////////////////////////////////////////////////////////////\x0a\x0a");
+			printf("	!!! WARNING:	This script will not run without the WARTHOG Throttle connected\x0a\x0a");
+			printf("	/////////////////////////////////////////////////////////////////////////////\x0a");
+			Abort();
+		}
+		else {
+			&MyThrottle = &Throttle;
+			printf("++	Connected throttle	is WARTHOG Replica A-10C Throttle\x0a");
+		}
+
+		// There are two Rudders compatible with this script...
+		&MyRudder = &joy0;
+		if (&TFRPRudder != &joy0) {
+			&MyRudder = &TFRPRudder;
+			printf("++	Connected rudder	is TFRPRudder.\x0a");
+		}
+		else if (&TFRPHARudder != &joy0) {
+			&MyRudder = &TFRPHARudder;
+			printf("++	Connected rudder	is TFRPHARudder.\x0a");
+			EnableMyRudder = ENABLED;
+		}
+		else {
+			printf("++	No compatible rudder connected. Use alt YAW control.\x0a");
+			printf("	(Joystick S3 + Throttle Coolie Switch L & R)\x0a");
+			EnableMyRudder = DISABLED;
+		}
+
+		SetShiftButton(&MyJoystick, S3, &MyThrottle, PSF, PSB);					// ** DO NOT TOUCH **  Joystick Nosewheel Switch (S3) = IO, Throttle pinky switch (PSF/PSB) = UMD
 
 		SetKBRate(PulseTime, DelayTime);										// Base Settings 	(See ED_UserSettings.tmh)
 		SetKBLayout(KBLayout);													//					(See ED_ScriptDefines.ttm)
 	
 		fnPIPMode(RESET);														// Reset PIPMode
 
+		printf("\x0a\++	Load MyStates from file...\x0a");
 		stfnMyStates(LOAD);														// Load my status variables
 		
 		fnLEDBrightness();														// Set initial LED Brightness levels
+
+		printf("++	Initialise Sound enhancement functions (if ENABLED)...\x0a\x0a");
 		initTextToSpeech();														// Initialise Text-To-Speech engine
 		initSoundFX();															// Initialise Sound Effects engine
-		
+
+		printf("\x0a\++	Initialise Custom Commands...\x0a");
 		fnCustomCommands();														// Initialise Custom Macros (See ED_Macros.tmh)
 		
 		if (CommsModule == ENABLED) {
+			printf("++	Initialise Communications Module...\x0a");
 			initCommsChannels();												// Initialise Communications Control
 		}
 		
@@ -165,10 +249,11 @@ include "ED_Toggles.tmh"
 // -------------------------- //
 // Initialise Flight controls //
 // -------------------------- //
-		
+
+		printf("\x0a\++	Initialise Joystick, Throttle and Rudder pedals\x0a");
 		initJoystickAxis();
 		initThrottleAxis();														// Includes Throttle "Friction Control" Slider
-		initTFRPRudder();
+		initRudderAxis();
 
 		printf("\x0a\++	Initialise Hardware	...	Complete	++\x0a");
 

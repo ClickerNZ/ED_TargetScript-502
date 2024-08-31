@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
+// This file: ED_Toggles.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
 // This file: ED_Toggles.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Refer Change Log.txt in parent folder
 
@@ -334,7 +338,11 @@
 			if (ReverseThrust) {
 				printf("Throttle:			REVERSE	>>\x0a");
 				
+<<<<<<< HEAD
+				AutoRepeat(hBeepFX, 1000, &fnSoundFX, "beep");								// Sound Reversing "beep" until reverse cancelled
+=======
 				AutoRepeat(hBeepFX, 1000, &fnSoundFX, "beep");								// wavfile = 0 causes wavfile to be set to "beep" within fnSoundFX
+>>>>>>> main
 				
 				// TOGGLE: Speedbrake
 				if (EnableSpeedBrake & (fHardpoints & !fLandingGear)) {						// If PSF OR (hardpoints deployed AND Gear Retracted)...

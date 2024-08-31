@@ -1,5 +1,15 @@
 // CMDR Clicker Thrustmaster TARGET Script Change Log //
 
+<<<<<<< HEAD
+v502.02 - Replace legacy TARGET aliases as per;
+			- &Joystick replaced by &MyJoystick
+			- &Throttle rpllaced by &MyThrottle
+			- &TFRPRudder replaced by &MyRudder
+		- Include check code in main and assign above aliases with compatible Thrusmaster hardware aliases
+		- Remove excludes for compatible thrustmaster hardware 
+
+=======
+>>>>>>> main
 v502.01	- New Point Release
 		- Many changes and enhancements
 		- Re-Index

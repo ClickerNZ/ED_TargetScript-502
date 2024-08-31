@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
+// This file: ED_StateTracker.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
 // This file: ED_StateTracker.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Refer Change Log.txt parent folder
 
@@ -368,7 +372,7 @@
 				}
 				
 				fnSetLEDs();															// Turn off Status LEDs, then...
-				ActKey(PULSE+KEYON+LED(&Throttle, LED_ONOFF, LED_CURRENT-LED0)); 		// set GLOBAL LED OFF
+				ActKey(PULSE+KEYON+LED(&MyThrottle, LED_ONOFF, LED_CURRENT-LED0)); 		// set GLOBAL LED OFF
 
 				stfnMyStates(SAVE);
 			}
@@ -574,7 +578,7 @@
 
 // TESTING  // Check and align switch with function
 //
-//			if ((Throttle[RDRNRM] & !fCargoScoop) | (Throttle[RDRDIS] & fCargoScoop)) {
+//			if ((MyThrottle[RDRNRM] & !fCargoScoop) | (MyThrottle[RDRDIS] & fCargoScoop)) {
 //				ActKey(PULSE+KEYON+CargoScoop);								// Fix misaligned switch?
 //			}
 //
@@ -591,7 +595,7 @@
 
 // TESTING	// Check and align switch with function
 //
-//			if ((Throttle[EACON] & !fSilentRunning) | (Throttle[EACOFF] & fSilentRunning)) {
+//			if ((MyThrottle[EACON] & !fSilentRunning) | (MyThrottle[EACOFF] & fSilentRunning)) {
 //				ActKey(PULSE+KEYON+SilentRunning);							// Fix misaligned switch?
 //			}
 //

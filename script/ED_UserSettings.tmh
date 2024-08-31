@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
+// This file: ED_UserSettings.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
 // This file: ED_UserSettings.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Refer Change Log.txt in parent folder
 
@@ -125,7 +129,6 @@
 	alias	VoiceCMD			= "-r 1";				// "-r 0" = normal rate. "-r 2" = 20% faster
 	
 	define	TrainingMode		ENABLED					// ENABLED or DISABLED. When game is not running, pressing a button/switch announces basic function
-//	define	TrainingMode		DISABLED				// ENABLED or DISABLED. When game is not running, pressing a button/switch announces basic function
 	define	AnnounceTraining	DISABLED				// DISABLED = Do not announce training mode, ENABLED = Announce training mode
 
 //------------------//
@@ -173,7 +176,7 @@
 	define	AutoHanger			DISABLED				// !! TESTING !!	// ENABLED = Initiate Hanger+Station Services automatically when docked, DISABLED = don't
 														// !! TESTING !!	// Hanger services on Carrier is completely different to stations in Horizons and we cannot yet
 																			// dynamically determine if docked in station versus carrier
-																			// ISSUE: triggered when reboarding ship from on foot when enabled
+																			// ISSUE: currently triggered when reboarding ship from on foot when enabled
 															
 	define	AutoHUD				ENABLED					//	Enable to toggle HUD to Analysis Mode when FSD engaged
 	define	AutoGearUP			DISABLED				//	Enable to retract landing gear when lifting off using the script 'launch' function 
@@ -181,7 +184,7 @@
 	define	AutoHeatsink		ENABLED					//	Enable to fire a heatsink when temp > 100% (requires launcher and ammo)
 	define	AutoStrobe			ENABLED					//	Enable to strobe silent running if in danger and shields drop
 	
-	define	CommsModule			DISABLED				//	ED_CommsControl - still in development
+	define	CommsModule			DISABLED				//	ED_CommsControl - still in development (I don't use this as I play mostly in solo)
 	
 	define	ChatTABs			2						//	Set to number of Chat Tabs you have setup within the Comms Panel, in game. (Valid = 1-4)
 
@@ -211,7 +214,7 @@
 
 	define	FAOFFCurves			SLOW					// Set Curve profile desired for FA-OFF. Valid settings = OFF, MILD, MEDIUM or SLOW (see below) 
 	define	CurveInfo			NOPRINT					// Set if you want curve info printed to console each time we change. Valid settings = PRINT or NOPRINT
-	define	EnableTFRPRudder	ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP Rudder.
+	define	EnableMyRudder		ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP or TFRPHA Rudder.
 	define	SwapRoll4Yaw		DISABLED				// Set to ENABLED if you wish to set X-Axis to Yaw (Default = Roll)
 
 	// The below curve arrays are set for "off", "mild", "medium" or "slow" and controlled via the Autopilot switch
@@ -228,6 +231,6 @@
 	short	Rudder_Curve[]		= { 1,		2,		0,		3,		4 };	// Autopilot switch (Up = MILD curves, down = SLOWER curves)
 	 
 	short	Slew_Curve[]		= {	2,		2,		0,		2,		2 };	// Set Slew Curve
-								//	MILD	MEDIUM	NONE	SLOW	SLOWEST
+	// --------------------------  MILD	  MEDIUM   NONE    SLOW   SLOWEST	//
 
 // END

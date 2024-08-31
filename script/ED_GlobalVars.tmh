@@ -3,7 +3,11 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
+<<<<<<< HEAD
+// This file: ED_GlobalVars.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
+=======
 // This file: ED_GlobalVars.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
+>>>>>>> main
 
 // Refer Change Log.txt in parent folder
 
@@ -27,6 +31,15 @@
 
 // START
 
+
+//--------------------//
+// Connected Hardware //
+//--------------------//
+
+	alias	MyJoystick;					// Global Joystick handle. Set in ED_Main depending on which compatible Joystic/Base is connected
+	alias	MyThrottle;					// Global Throttle handle. Set in ED_Main depending on which compatible Throttle is connected
+	alias	MyRudder;					// Global Rudder handle. Set in ED_Main depending on which compatible Rudder is connected	
+	
 //----------------//
 // DEFAULT STATES //   					// GLOBAL VARIABLE INITIALISATION, DESCRIPTION & USAGE
 //----------------//
@@ -73,6 +86,8 @@
 	int WDRetries			= 0;		// Failed Warpdrive retry count (eg MassLocked when trying to go to supercruise)
 	
 	int SCO					= 0;		// Supercruise Overcharge flag
+	
+	int EnableMyRudder		= ENABLED;	// Enable by default
 
 			
 // END
