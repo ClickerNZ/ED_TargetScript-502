@@ -340,8 +340,8 @@
 				MapKey(&MyThrottle, MSP, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
 			}
 			else {
-				MapKey(&MyThrottle, MSU, EXEC("fnChannelSelect(NEXT);"));				// Select Next Channel. Wrap when Channel > 4
-				MapKey(&MyThrottle, MSD, EXEC("fnChannelSelect(PREVIOUS);"));			// Select Prev Channel. Wrap when Channel < 0
+				MapKey(&MyThrottle, MSU, EXEC("fnChannelSelect(NEXT);"));			// Select Next Channel. Wrap when Channel > 4
+				MapKey(&MyThrottle, MSD, EXEC("fnChannelSelect(PREVIOUS);"));		// Select Prev Channel. Wrap when Channel < 0
 				MapKey(&MyThrottle, MSL, EXEC("fnCommStatus();"));					// Output Comms Status
 				MapKey(&MyThrottle, MSR, EXEC("fnCommStatus();"));					// Output Comms Status	
 				MapKeyIO(&MyThrottle, MSP, 
@@ -997,9 +997,18 @@
 //		(Enhanced Attitude Control (EAC) Arm/Off)
 //		-----------------------------------------
 		
-		MapKey(&MyThrottle, EACON, EXEC("fnVPOutput(\"Engage Silent running\");"));
-		MapKey(&MyThrottle, EACOFF, EXEC("fnVPOutput(\"Disengage Silent Running\");"));
-
+		if (MapKeyProfile == BASIC) {
+			MapKey(&MyThrottle, EACON, EXEC("fnVPOutput(\"Engage Silent running\");"));
+		}
+		else {
+			MapKeyIO(&MyThrottle, EACON,
+				EXEC("fnVPOutput(\"Engage Silent running strobe function\");"),
+				EXEC("fnVPOutput(\"Engage Silent running\");")
+			);
+		}
+				
+		MapKey(&MyThrottle, EACOFF, EXEC("fnVPOutput(\"Disengage silent running\");"));
+		
 //		(Radar Altimeter)
 //		-----------------
 
