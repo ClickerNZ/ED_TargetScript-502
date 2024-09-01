@@ -2,11 +2,7 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
-<<<<<<< HEAD
 // This file: ED_MapKeyAssignment.tmh (v502.02) ... supports Elite Dangerous (Odyssey)
-=======
-// This file: ED_MapKeyAssignment.tmh (v502.01) ... supports Elite Dangerous (Odyssey)
->>>>>>> main
 
 // Contains MapKey Statements for all button and switch actions
 // Contains MapKey Statements to announce via TextToSpeech and printf to console for each button or switch action (training mode)
@@ -331,27 +327,26 @@
 //		(Mike Switch)		// Alternate Roll/Yaw or Communications Controller functions
 //		-------------
 
-		if(CommsModule == ENABLED) {
-			if (MapKeyProfile == BASIC) {
-				MapKey(&MyThrottle, MSU, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
-				MapKey(&MyThrottle, MSD, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
-				MapKey(&MyThrottle, MSL, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
-				MapKey(&MyThrottle, MSR, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
-				MapKey(&MyThrottle, MSP, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
-			}
-			else {
-				MapKey(&MyThrottle, MSU, EXEC("fnChannelSelect(NEXT);"));				// Select Next Channel. Wrap when Channel > 4
-				MapKey(&MyThrottle, MSD, EXEC("fnChannelSelect(PREVIOUS);"));			// Select Prev Channel. Wrap when Channel < 0
+		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED) {
+			MapKey(&MyThrottle, MSU, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
+			MapKey(&MyThrottle, MSD, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
+			MapKey(&MyThrottle, MSL, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
+			MapKey(&MyThrottle, MSR, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
+			MapKey(&MyThrottle, MSP, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
+		}
+		else {			// CommsModule is ENABLED 
+				MapKey(&MyThrottle, MSU, EXEC("fnChannelSelect(NEXT);"));			// Select Next Channel. Wrap when Channel > 4
+				MapKey(&MyThrottle, MSD, EXEC("fnChannelSelect(PREVIOUS);"));		// Select Prev Channel. Wrap when Channel < 0
 				MapKey(&MyThrottle, MSL, EXEC("fnCommStatus();"));					// Output Comms Status
 				MapKey(&MyThrottle, MSR, EXEC("fnCommStatus();"));					// Output Comms Status	
 				MapKeyIO(&MyThrottle, MSP, 
 					EXEC("fnPTTMode();"), 											// Toggle PTT Mode
 					EXEC("fnMicControl(ON);")										// PTT
 					);
-				
+					
 				MapKeyR(&MyThrottle, MSP, EXEC("fnMicControl(OFF);"));				// RELEASE PTT		
 			}
-		}
+		
 		
 //		(Speed Brake)		// Reverse Throttle function modifiers
 //		-------------
@@ -901,7 +896,14 @@
 //		(Mike Switch)		// Communications Controller functions
 //		-------------
 
-		if(CommsModule == ENABLED) {
+		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED) {
+			MapKey(&MyThrottle, MSU, EXEC("fnVPOutput(\"Not mapped\");"));
+			MapKey(&MyThrottle, MSD, EXEC("fnVPOutput(\"Not mapped\");"));
+			MapKey(&MyThrottle, MSL, EXEC("fnVPOutput(\"Not mapped\");"));
+			MapKey(&MyThrottle, MSR, EXEC("fnVPOutput(\"Not mapped\");"));		
+			MapKey(&MyThrottle, MSP, EXEC("fnVPOutput(\"Not mapped\");"));
+		}
+		else {			// CommsModule is ENABLED 		
 			MapKey(&MyThrottle, MSU, EXEC("fnVPOutput(\"Select next Comms channel\");"));
 			MapKey(&MyThrottle, MSD, EXEC("fnVPOutput(\"Select previous Comms Channel\");"));
 			MapKey(&MyThrottle, MSL, EXEC("fnVPOutput(\"Output Comms Status\");"));
@@ -910,13 +912,8 @@
 				EXEC("fnVPOutput(\"Toggle PTT Mode\");"),
 				EXEC("fnVPOutput(\"Push To Talk\");")
 				);
-		}
-		else {
-			MapKey(&MyThrottle, MSU, EXEC("fnVPOutput(\"Not mapped\");"));
-			MapKey(&MyThrottle, MSD, EXEC("fnVPOutput(\"Not mapped\");"));
-			MapKey(&MyThrottle, MSL, EXEC("fnVPOutput(\"Not mapped\");"));
-			MapKey(&MyThrottle, MSR, EXEC("fnVPOutput(\"Not mapped\");"));		
-			MapKey(&MyThrottle, MSP, EXEC("fnVPOutput(\"Not mapped\");"));
+				
+				MapKeyR(&MyThrottle, MSP, EXEC("fnVPOutput(\"Release Push To Talk\");"));				// RELEASE PTT						
 		}
 		
 	
@@ -997,9 +994,18 @@
 //		(Enhanced Attitude Control (EAC) Arm/Off)
 //		-----------------------------------------
 		
-		MapKey(&MyThrottle, EACON, EXEC("fnVPOutput(\"Engage Silent running\");"));
-		MapKey(&MyThrottle, EACOFF, EXEC("fnVPOutput(\"Disengage Silent Running\");"));
-
+		if (MapKeyProfile == BASIC) {
+			MapKey(&MyThrottle, EACON, EXEC("fnVPOutput(\"Engage Silent running\");"));
+		}
+		else {
+			MapKeyIO(&MyThrottle, EACON,
+				EXEC("fnVPOutput(\"Engage Silent running strobe function\");"),
+				EXEC("fnVPOutput(\"Engage Silent running\");")
+			);
+		}
+				
+		MapKey(&MyThrottle, EACOFF, EXEC("fnVPOutput(\"Disengage silent running\");"));
+		
 //		(Radar Altimeter)
 //		-----------------
 
