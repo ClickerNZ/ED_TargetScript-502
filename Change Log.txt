@@ -5,7 +5,10 @@ v502.02 - Replace legacy TARGET aliases as per;
 			- &Throttle rpllaced by &MyThrottle
 			- &TFRPRudder replaced by &MyRudder
 		- Include check code in main and assign above aliases with compatible Thrusmaster hardware aliases
-		- Remove excludes for compatible thrustmaster hardware 
+		- Remove excludes for compatible thrustmaster hardware (AVA base and/or F18 flight sticks should work) 
+		- Set joystick Y axis default to YAW for BASIC profile for users without Rudders
+		- Review and correct Keymaps and map files
+		-
 
 =======
  
