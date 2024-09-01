@@ -3,11 +3,7 @@
 //	CMDR Clicker's Elite Dangerous Thrustmaster Warthog + TFRP Script	//
 //----------------------------------------------------------------------//
 
-<<<<<<< HEAD
 // This file:	ED_Main.tmc 		v502.02
-=======
-// This file:	ED_Main.tmc 		v502.01
->>>>>>> main
 // Supports:	Elite Dangerous 	v4.0.0.1808 (Odyssey)
 // Requires:	TARGET 				v3.0.24.618_rev1
 //				Joystick firmware	v12
@@ -102,20 +98,11 @@ include "ED_Toggles.tmh"
 
 	int main() {
 	
-<<<<<<< HEAD
 		printf("\x0a\++	Initialise hardware	...	Start	++\x0a\x0a");			// Eliminates error messages relating to unfound devices
-=======
-		printf("\x0a\++	Exclude unwanted controllers	...	");					// Eliminates error messages relating to unfound devices
->>>>>>> main
 																				// Check target.tmh alias list
-																				
 		Exclude(&HCougar);
 		Exclude(&T16000);
 		Exclude(&T16000L);
-<<<<<<< HEAD
-=======
-//		Exclude(&JoystickF18);													// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
->>>>>>> main
 		Exclude(&TWCSThrottle);
 		Exclude(&LMFD);
 		Exclude(&RMFD);
@@ -126,27 +113,20 @@ include "ED_Toggles.tmh"
 		Exclude(&TCAQBoeing12);
 		Exclude(&TCAQBoeing34);
 		Exclude(&TCAYokeBoeing);
-<<<<<<< HEAD
-		Exclude(&ViperTQS);														// Throttle Quadrant System - If used may require recode for &MyThrottle alias if different from standard WARTHOG
-		Exclude(&ViperBBox);													// Throttle Quadrant System - If used may require recode for &MyThrottle alias if different from standard WARTHOG
-=======
-		Exclude(&ViperTQS);														// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
-		Exclude(&ViperBBox);													// Throttle Quadrant System - If used may require recode for &Throttle alias if different from standard WARTHOG
->>>>>>> main
+		Exclude(&ViperTQS);
+		Exclude(&ViperBBox);
 		Exclude(&TCASidestickXPilot);
 		Exclude(&TCASidestickXCopilot);
 		Exclude(&FarmStickRight);
 		Exclude(&FarmStickLeft);
-//		Exclude(&AVA_F16);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
-//		Exclude(&AVA_F18);														// Leave included. Set &Joystick alias in ED_UserSettings.tmh file
 		
-		if (EnableMyRudder) {													// (see ED_UserSettings.tmh)
-			Configure(&TFRPRudder, MODE_FILTERED);
-		}
-		else {
-			Exclude(&TFRPRudder);
-			Exclude(&TFRPHARudder);
-		}
+//		if (EnableMyRudder) {													// (see ED_UserSettings.tmh)
+//			Configure(&TFRPRudder, MODE_FILTERED);
+//		}
+//		else {
+//			Exclude(&TFRPRudder);
+//			Exclude(&TFRPHARudder);
+//		}
 		
 		printf("++	Connect our controllers ... \x0a\x0a");
 
@@ -213,12 +193,17 @@ include "ED_Toggles.tmh"
 		else if (&TFRPHARudder != &joy0) {
 			&MyRudder = &TFRPHARudder;
 			printf("++	Connected rudder	is TFRPHARudder.\x0a");
-			EnableMyRudder = ENABLED;
 		}
 		else {
-			printf("++	No compatible rudder connected. Use alt YAW control.\x0a");
-			printf("	(Joystick S3 + Throttle Coolie Switch L & R)\x0a");
+			printf("++	No compatible rudder connected.\x0A");			
 			EnableMyRudder = DISABLED;
+			if (MapKeyProfile == BASIC) {
+				printf("Toggle ROLL for YAW via pressing ENTER key on NUMPAD\x0a");
+			}
+			else {
+				printf("	    Consider use of alt YAW control.\x0a");
+				printf("	(Joystick S3 + Throttle Coolie Switch L & R)\x0a");			
+			}
 		}
 
 		SetShiftButton(&MyJoystick, S3, &MyThrottle, PSF, PSB);					// ** DO NOT TOUCH **  Joystick Nosewheel Switch (S3) = IO, Throttle pinky switch (PSF/PSB) = UMD
