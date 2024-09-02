@@ -327,7 +327,7 @@
 //		(Mike Switch)		// Alternate Roll/Yaw or Communications Controller functions
 //		-------------
 
-		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED) {
+		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED)) {
 			MapKey(&MyThrottle, MSU, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
 			MapKey(&MyThrottle, MSD, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
 			MapKey(&MyThrottle, MSL, EXEC("fnTextToSpeech(\"Not mapped\");"));	// <not mapped>
@@ -896,7 +896,7 @@
 //		(Mike Switch)		// Communications Controller functions
 //		-------------
 
-		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED) {
+		if ((MapKeyProfile == BASIC) | (CommsModule == DISABLED)) {
 			MapKey(&MyThrottle, MSU, EXEC("fnVPOutput(\"Not mapped\");"));
 			MapKey(&MyThrottle, MSD, EXEC("fnVPOutput(\"Not mapped\");"));
 			MapKey(&MyThrottle, MSL, EXEC("fnVPOutput(\"Not mapped\");"));
