@@ -48,11 +48,11 @@
 	int initThrottleAxis() {																	// Set Default Throttle Axis
 		
 		// Throttle mapping...
-		MapAxis(&MyThrottle, THR_LEFT, DX_ZROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);					// Set Left Throttle. Right throttle not used.
+		MapAxis(&MyThrottle, THR_LEFT, DX_ZROT_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);				// Set Left Throttle. Right throttle not used.
 		printf("Throttle Axis	... done\x0a");
 
 		// Slider Mapping...
-		MapAxis(&MyThrottle, THR_FC, DX_SLIDER_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);					// Set Friction Control Axis Curve (Sensor Range Zoom Scaling)
+		MapAxis(&MyThrottle, THR_FC, DX_SLIDER_AXIS, AXIS_NORMAL, MAP_ABSOLUTE);				// Set Friction Control Axis Curve (Sensor Range Zoom Scaling)
 		printf("Slider Axis	... done		");
 		fnSetSliderCurve(1);
 		
