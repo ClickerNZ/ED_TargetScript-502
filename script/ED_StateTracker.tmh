@@ -1269,8 +1269,8 @@
 					OldCurves		= MyStates.sCurves;
 					LEDLevel		= MyStates.sLEDLevel;
 					NewMaxJson		= MyStates.sMaxJsonLength;
-//					NewMaxJson		= 0;								// To reset NewMaxJson, uncomment this line and comment out the line immediately above it.
-																		// Start then stop the game, then undo this, save and recompile
+//					NewMaxJson		= 0;								// To reset NewMaxJson, uncomment this line and comment out the line immediately above it (save/compile/run).
+																		// Start then stop the game, then undo this, save/recompile/run then start game again.
 					PIPMode			= MyStates.sPIPMode;
 					
 					printf("\x0a\MyStates successfully loaded @ %s\x0a\x0a", fnGetTOD());
