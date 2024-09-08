@@ -27,8 +27,9 @@
 
 // Index:	Line		FUNCTION
 //			Line 62:	include statements
-//			Line 98: 	int main()
-//			Line 183:	int EventHandle()
+//			Line 99: 	int main()
+//			Line 146:	initialise hardware
+//			Line 260:	int EventHandle()
 
 // PREFACE
 //
