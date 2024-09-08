@@ -144,7 +144,7 @@
 // DEBUG DEFINES //
 //---------------//
 
-	define ControllerCheck						DISABLED				// Will not abort script if compatible Joystick or Throttle not found in ED_Main.tmc
+	define ControllerCheck						ENABLED				// Will not abort script if compatible Joystick or Throttle not found in ED_Main.tmc
 
 
 //----------------------------------------------------------------------------------------------------------//
