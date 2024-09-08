@@ -1,7 +1,7 @@
 
 Version 502 (Odyssey)
 
-STATUS: BETA
+STATUS: BETA - FINAL (Tidy up phase)
 
 HISTORY:
 
