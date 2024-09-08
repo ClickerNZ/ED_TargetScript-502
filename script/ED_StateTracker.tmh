@@ -462,10 +462,10 @@
 			
 			if (fLandingGear != lLandingGear) {								// This may be announced via in game setting
 				if (fLandingGear & fMainShip) {								// Dealt with in tgLandingGear
-//					Landing Gear Deployed 
+					// Landing Gear Deployed 
 				}
 				else if (fMainShip) {	
-//					Landing Gear retracted  
+					// Landing Gear retracted  
 				}
 			}
 			
@@ -582,10 +582,10 @@
 
 			if (fSilentRunning != lSilentRunning) {
 				if (fSilentRunning) {
-//					do nothing ... handled within tgSilentRunning()
+					// do nothing ... handled within tgSilentRunning()
 				}
 				else {
-//					do nothing ... handled within tgSilentRunning()
+					// do nothing ... handled within tgSilentRunning()
 				}
 			}
 
@@ -615,17 +615,17 @@
 				}				
 			}
 
-			if (fSRVTurretView != lSRVTurretView) {							// CHECK THIS
+			if (fSRVTurretView != lSRVTurretView) {										// CHECK THIS
 				if (fSRVTurretView) {
-//					printf("ENTER - SRV Turret View\x0a");   				// handled in tgHardpoints 
+					// printf("ENTER - SRV Turret View\x0a");   						// handled in tgHardpoints 
 				}
 				else {
-//					printf("EXIT - SRV Turret View\x0a");				
+					// printf("EXIT - SRV Turret View\x0a");				
 				}				
 			}
 
 			if (fSRV & (fSRVTurretRetracted != lSRVTurretRetracted)) {
-				if (fSRVTurretRetracted ) {									// Detect turret deploy/retract
+				if (fSRVTurretRetracted ) {												// Detect turret deploy/retract
 					DeferCall(1000, &fnVPOutput, "Turret retracted");			
 				}
 				else {
@@ -643,11 +643,11 @@
 			}
 
 			if (fMassLocked != lMassLocked) {
-				if (fMassLocked & !lMassLocked & !fLanded  & !fDocked) {	// Detect when Mass Locked when flying
+				if (fMassLocked & !lMassLocked & !fLanded  & !fDocked) {				// Detect when Mass Locked when flying
 					fnVPOutput("Mass Locked!");
 				}
 				
-				if (!fMassLocked & lMassLocked & fMainShip & !fDocked & !fLanded) {			// Detect when no longer Mass Locked
+				if (!fMassLocked & lMassLocked & fMainShip & !fDocked & !fLanded) {		// Detect when no longer Mass Locked
 					fnVPOutput("Masslock cleared");
 				}
 			}
@@ -657,15 +657,15 @@
 					printf("FSD charging\x0a");
 				}
 				else {
-//					do nothing
+					// do nothing
 				}				
 			}
 
-			if (fFSDCooldown != lFSDCooldown) {												// Detect when FSD enters cool down phase
+			if (fFSDCooldown != lFSDCooldown) {											// Detect when FSD enters cool down phase
 				if (fFSDCooldown) {
 					printf("FSD Cooling down\x0a");
 				}				
-				else {																		// Detect when FSD Cool down is complete
+				else {																	// Detect when FSD Cool down is complete
 					fnVPOutput("Frameshift drive cooldown is complete");
 				}
 			}	
@@ -679,9 +679,9 @@
 				}				
 			}
 
-			if (fOverHeating != lOverHeating) {								// Detect when we start overheation
+			if (fOverHeating != lOverHeating) {											// Detect when we start overheation
 				if (fMainShip & fOverHeating) {
-					if (AutoHeatsink) {										// If 'AutoHeatSink' is set, fire a heatsink if we have one
+					if (AutoHeatsink) {													// If 'AutoHeatSink' is set, fire a heatsink if we have one
 						fnVPOutput("OVERHEATING: Auto Heat sink engaged!");
 						ActKey(PULSE+KEYON+DeployHeatSink);
 					}
@@ -694,7 +694,7 @@
 				}
 			}
 
-			if ((fLatLong != lLatLong) & fMainShip) {							// Detect when we cross the Orbital Cruise boundary
+			if ((fLatLong != lLatLong) & fMainShip) {									// Detect when we cross the Orbital Cruise boundary
 				if (fLatLong) {
 					OrbitalCruise = 1;
 				}
@@ -714,14 +714,14 @@
 			
 			if (fInterdicted != lInterdicted) {
 				if (fInterdicted) {
-					printf("INTERDICTION!\x0a");							// no point announcing this!
+					printf("INTERDICTION!\x0a");										// no point announcing this!
 				}
 				else {
 					fnVPOutput("Interdiction event now over");
 				}
 			}
 
-			if (fMainShip & !lMainShip) {									// Detect when we board ship
+			if (fMainShip & !lMainShip) {												// Detect when we board ship
 				if (fMainShip) {
 					if (!StartupLock) printf("SHIP:			BOARDED\x0a");
 				}
@@ -730,7 +730,7 @@
 				}
 			}
 
-			if (fFighter & !lFighter) {										//Detect when we board the fighter
+			if (fFighter & !lFighter) {													//Detect when we board the fighter
 				if (fFighter) {
 					if (!StartupLock) printf("FIGHTER:		BOARTDED\x0a");
 				}
@@ -739,7 +739,7 @@
 				}
 			}
 
-			if (fSRV != lSRV) {												// Detect when we jump into SRV
+			if (fSRV != lSRV) {															// Detect when we jump into SRV
 				if (fSRV) {
 					if (!StartupLock) printf("SRV:			BOARDED\x0a");
 				}
@@ -805,7 +805,7 @@
 					fnVPOutput("SRV Hi Beam");
 				}
 				else {
-//					Lights OFF - handled elsewhere
+					// Lights OFF - handled elsewhere
 				}				
 			}
 						
@@ -868,7 +868,7 @@
 
 		// Process 'Flags2' value...most significant bit order
 		
-//		if (Flags2 < 0) {											// Most significant bit is set 
+//		if (Flags2 < 0) {														// Most significant bit is set 
 //			fRESERVED			= ON;
 //		}
 //		else {
@@ -922,7 +922,7 @@
 					if (!StartupLock) printf("On Foot\x0a");
 				}
 				else {
-//					not on foot
+					// not on foot
 				}
 			}
 
@@ -964,10 +964,10 @@
 
 			if (fAimDownSight != lAimDownSight) {						// I cannot think of a use for reporting this 
 				if (fAimDownSight) {
-//					do nothing					
+					// do nothing					
 				}
 				else {
-//					do nothing							
+					// do nothing							
 				}
 			}
 
@@ -994,7 +994,7 @@
 					DeferCall(1000, &fnVPOutput, "Its a bit nippie");					
 				}
 				else {
-//					nothing to do 								
+					// nothing to do 								
 				}
 			}
 
@@ -1003,7 +1003,7 @@
 					DeferCall(1000, &fnVPOutput, "Its getting warm!");					
 				}
 				else {
-//					nothing to do 									
+					// nothing to do 									
 				}
 			}
 
@@ -1012,7 +1012,7 @@
 					DeferCall(1000, &fnVPOutput, "Its bloody freezing!");					
 				}
 				else {
-//					nothing to do 
+					// nothing to do 
 				}
 			}
 
@@ -1021,7 +1021,7 @@
 					DeferCall(1000, &fnVPOutput, "Geezz its flamin hot");					
 				}
 				else {
-//					nothing to do 							
+					// nothing to do 							
 				}
 			}
 
@@ -1075,7 +1075,7 @@
 					printf("Telepresence multi crew detected\x0a");						
 				}
 				else {
-//					nothing to do 
+					// nothing to do 
 				}
 			}
 
@@ -1084,7 +1084,7 @@
 					printf("Physical multi crew detected\x0a");	
 				}
 				else {
-//					nothing to do 
+					// nothing to do 
 				}
 			}
 
@@ -1093,7 +1093,7 @@
 					printf("FSD Hyperdrive Charging\x0a");					
 				}
 				else {
-//					FSD Hyperdrive no longer charging									
+					// FSD Hyperdrive no longer charging									
 				}
 			}
 

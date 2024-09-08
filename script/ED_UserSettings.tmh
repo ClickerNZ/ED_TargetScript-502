@@ -55,14 +55,15 @@
 	//				The below path is usually where the Elite Dangerous journal files can be found.
 	//				Just replace '<username>' with your Windows username, NOT your CMDR Name!!!
 	
-//	alias	JournalFolder		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
-//	alias	StatusFile			= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
-
+	alias	JournalFolder		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
+	alias	StatusFile			= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
+	alias	MaxStatusFile		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
+	
 //	here's mine as an example...
 
-	alias	JournalFolder		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
-	alias	StatusFile			= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
-	alias	MaxStatusFile		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
+//	alias	JournalFolder		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
+//	alias	StatusFile			= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
+//	alias	MaxStatusFile		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
 	
 	define	StatusReadRate		500		// Set Read Loop rate in milliseconds. (ie 500 = read status.json twice a second)
 										// You may see issues if this is set too small. If you do, raise this value to 750, 1000, or higher
@@ -75,7 +76,7 @@
 	//				I've included an example below but so long as you create the folder structure, you can put this anywhere on your PC
 	//				Saves the script states after a game restart or relog. 
 	
-	alias	MyStatusFile		= "d:\\Thrustmaster\\ED_TargetScript\\MyStatusFile.json";
+	alias	MyStatusFile		= "C:\\Thrustmaster\\ED_TargetScript\\MyStatusFile.json";
 
 
 //----------------//
@@ -95,7 +96,7 @@
 	int		EnableVoice			= ENABLED;				// ENABLED or DISABLED. Enable this if you wish to use "voice.exe". 
 														// Toggled via tgTxt2Speech();
 														
-	alias	VoicePath			= "d:\\Thrustmaster\\ED_TargetScript\\voice.exe";
+	alias	VoicePath			= "C:\\Thrustmaster\\ED_TargetScript\\voice.exe";
 	
 	int		VoiceVolume			= 75;					// Default Volume set at 75% Settable via fnVoiceVolume()
 														// Note: VoiceVolume gets saved to MyStatus file when game halts and is reloaded at script start
@@ -139,8 +140,8 @@
 
 	int		EnableSoundFX		= ENABLED; 				// ENABLED or DISABLED. Enable this if you wish to use "sounder.exe"
 	
-	alias	SoundPath			= "d:\\Thrustmaster\\ED_TargetScript\\sounder.exe";
-	alias	WAVPath				= "d:\\Thrustmaster\\ED_TargetScript\\sounds\\";
+	alias	SoundPath			= "C:\\Thrustmaster\\ED_TargetScript\\sounder.exe";
+	alias	WAVPath				= "C:\\Thrustmaster\\ED_TargetScript\\sounds\\";
 	alias	SoundCMD			= "";
 
 
@@ -210,7 +211,6 @@
 
 	define	FAOFFCurves			SLOW					// Set Curve profile desired for FA-OFF. Valid settings = OFF, MILD, MEDIUM or SLOW (see below) 
 	define	CurveInfo			NOPRINT					// Set if you want curve info printed to console each time we change. Valid settings = PRINT or NOPRINT
-//	define	EnableMyRudder		ENABLED					// Set to DISABLED if you do not have a Thrustmaster TFRP or TFRPHA Rudder.
 	define	SwapRoll4Yaw		DISABLED				// Set to ENABLED if you wish to set X-Axis to Yaw (Default = Roll)
 
 	// The below curve arrays are set for "off", "mild", "medium" or "slow" and controlled via the Autopilot switch

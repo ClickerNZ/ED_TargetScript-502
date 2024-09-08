@@ -30,14 +30,14 @@
 //			Line 243: 	int tgCargoScoop()
 //			Line 269: 	int tgLandingGear()
 //			Line 312: 	int tgReverseThrust()
-//			Line 363:	int tgBoost()
-//			Line 391: 	int tgHardpoints()
-//			Line 428: 	int tgHUDMode()
-//			Line 443: 	int tgFSSMode()
-//			Line 469: 	int tgPlanetView()
-//			Line 492: 	int tgWarpDrive()
-//			Line 566: 	int tgExtCamera()
-//			Line 581:	int tgXAxis()
+//			Line 354:	int tgBoost()
+//			Line 382: 	int tgHardpoints()
+//			Line 419: 	int tgHUDMode()
+//			Line 434: 	int tgFSSMode()
+//			Line 460: 	int tgPlanetView()
+//			Line 483: 	int tgWarpDrive()
+//			Line 557: 	int tgExtCamera()
+//			Line 572:	int tgXAxis()
 	
 	
 // START
@@ -321,16 +321,7 @@
 		}
 		
 		if (!fSupercruise & !fOnFoot & !fLanded & !fDocked) {
-//			if (EnableSpeedBrake != 3) {
-//				ReverseThrust = 1;
-//			}
-//			else {
-//				ReverseThrust = 0;
-//			}
-//			if(EnableSpeedBrake != 2) {														// [PSB] held when Reverse toggled fixes misaligned switch
 				ActKey(PULSE+KEYON+ReverseThrottle);										// or press NUMPAD *
-//			}	
-//			ReverseThrust = !ReverseThrust;													// Internal state flag 
 			if (ReverseThrust) {
 				printf("Throttle:			REVERSE	>>\x0a");
 				

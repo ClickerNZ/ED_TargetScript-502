@@ -57,7 +57,6 @@
 //			Line 1344:	int fnGetTOD()
 //			Line 1362:	int fnGetDate()
 //			Line 1385:	int findstr()
-//			Line 1412:	int ModKey()			// not used
 
 //------------------//
 // CUSTOM FUNCTIONS //
@@ -1401,16 +1400,6 @@
 			strstart = strstart + 1;
 		}
 		return -1;
-	}
-
-
-	// Not used...found in discord provided by Dar|{cyde
-	// Usage example: ModKey(L_ALT, 1);
-	// Note: Potentially better than defining a macro combo-key in ED-Defines.ttm,
-	// as it relaeases 'mod' after 'key' and not before
-	
-	int ModKey(int mod=0, int key=0) { 
-	    return CHAIN(DOWN+mod, D(), PULSE+key, D(), UP+mod);
 	}
 
 
