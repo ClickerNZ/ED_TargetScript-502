@@ -45,7 +45,7 @@
 														// LEDLevel 5: 215 	- 255 (brightest)
 
 //----------------//
-// Status.json    //
+// Status.json    //		THIS SECTION IS CRITICAL FOR THE SCRIPT TO WORK
 //----------------//
 
 	// WARNING:		This script relies on and makes extensive use of 'status.json' key values
