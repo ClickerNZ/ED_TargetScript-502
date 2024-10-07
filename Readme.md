@@ -1,7 +1,11 @@
+CMDR Clicker's Thrustmaster TARGET Script for Elite Dangerous 
 
 Version 502 (Odyssey)
 
-STATUS: BETA - FINAL (Tidy up phase)
+STATUS: FINAL (Production/Support phase)
+
+Requires latest version of TARGET software + a Thrustmaster WARTHOG Joystick and Throttle.
+(Rudder Pedals are optional but highly recommended)
 
 HISTORY:
 
