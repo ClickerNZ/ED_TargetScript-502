@@ -1,23 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <Root PresetName="Clicker-Warthog-v502" MajorVersion="4" MinorVersion="1">
 	<KeyboardLayout>en-AU</KeyboardLayout>
-	<MouseXMode Value="" />
+	<MouseXMode Value="Bindings_MouseYaw" />
 	<MouseXDecay Value="1" />
-	<MouseYMode Value="" />
+	<MouseYMode Value="Bindings_MousePitch" />
 	<MouseYDecay Value="1" />
 	<MouseReset>
-		<Primary Device="{NoDevice}" Key="" />
-		<Secondary Device="{NoDevice}" Key="" />
+		<Primary Device="Mouse" Key="Mouse_5" />
+		<Secondary Device="Keyboard" Key="Key_Home">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+		</Secondary>
 	</MouseReset>
-	<MouseSensitivity Value="1.00000000" />
-	<MouseDecayRate Value="4.00000000" />
-	<MouseDeadzone Value="0.04742857" />
+	<MouseSensitivity Value="2.5" />
+	<MouseDecayRate Value="10.00000000" />
+	<MouseDeadzone Value="0.00000000" />
 	<MouseLinearity Value="1.00000000" />
 	<MouseGUI Value="1" />
 	<BlockMouseDecay>
-		<Primary Device="{NoDevice}" Key="" />
-		<Secondary Device="{NoDevice}" Key="" />
-		<ToggleOn Value="0" />
+		<Primary Device="Mouse" Key="Mouse_4" />
+		<Secondary Device="Keyboard" Key="Key_End">
+			<Modifier Device="Keyboard" Key="Key_LeftShift" />
+		</Secondary>
+		<ToggleOn Value="1" />
 	</BlockMouseDecay>
 	<YawAxisRaw>
 		<Binding Device="ThrustMasterWarthogCombined" Key="Joy_ZAxis" />
@@ -372,15 +376,11 @@
 	</TargetNextRouteSystem>
 	<PrimaryFire>
 		<Primary Device="ThrustMasterWarthogCombined" Key="Joy_1" />
-		<Secondary Device="Keyboard" Key="Key_1">
-			<Modifier Device="Keyboard" Key="Key_LeftShift" />
-		</Secondary>
+		<Secondary Device="Mouse" Key="Mouse_1" />
 	</PrimaryFire>
 	<SecondaryFire>
 		<Primary Device="ThrustMasterWarthogCombined" Key="Joy_2" />
-		<Secondary Device="Keyboard" Key="Key_2">
-			<Modifier Device="Keyboard" Key="Key_LeftShift" />
-		</Secondary>
+		<Secondary Device="Mouse" Key="Mouse_2" />
 	</SecondaryFire>
 	<CycleFireGroupNext>
 		<Primary Device="{NoDevice}" Key="" />
@@ -637,9 +637,9 @@
 	<MouseHeadlookSensitivity Value="0.26644883" />
 	<HeadlookDefault Value="0" />
 	<HeadlookIncrement Value="0.00000000" />
-	<HeadlookMode Value="Bindings_HeadlookModeDirect" />
+	<HeadlookMode Value="Bindings_HeadlookModeAccumulate" />
 	<HeadlookResetOnToggle Value="1" />
-	<HeadlookSensitivity Value="0.25000000" />
+	<HeadlookSensitivity Value="0.56050026" />
 	<HeadlookSmoothing Value="1" />
 	<HeadLookReset>
 		<Primary Device="Keyboard" Key="Key_Grave" />
@@ -790,7 +790,7 @@
 		<Secondary Device="{NoDevice}" Key="" />
 		<ToggleOn Value="1" />
 	</ToggleDriveAssist>
-	<DriveAssistDefault Value="1" />
+	<DriveAssistDefault Value="0" />
 	<MouseBuggySteeringXMode Value="" />
 	<MouseBuggySteeringXDecay Value="0" />
 	<MouseBuggyRollingXMode Value="" />
