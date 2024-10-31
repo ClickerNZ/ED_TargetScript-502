@@ -1,4 +1,4 @@
-CMDR Clicker's Thrustmaster TARGET Script for Elite Dangerous 
+CMDR Clicker's Thrustmaster WARTHOG TARGET Script for Elite Dangerous 
 
 Version 502 (Odyssey)
 
