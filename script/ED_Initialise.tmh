@@ -97,7 +97,7 @@
 	int initSoundFX() {
 		SounderExists = fopen(&SoundPath, "r");
 		if (SounderExists) {
-			fclose(VoiceExists);
+			fclose(SounderExists);
 			SerialText = 1;
 			fnVPOutput("Script based sound FX enabled");			
 			printf("Sounder.exe present at %s\x0a", &SoundPath);
