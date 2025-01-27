@@ -58,13 +58,7 @@
 	alias	JournalFolder		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
 	alias	StatusFile			= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
 	alias	MaxStatusFile		= "C:\\Users\\<username>\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
-	
-//	here's mine as an example...
-
-//	alias	JournalFolder		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\";
-//	alias	StatusFile			= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\status.json";
-//	alias	MaxStatusFile		= "d:\\Users\\den\\Saved Games\\Frontier Developments\\Elite Dangerous\\NewMaxJson.json";
-	
+		
 	define	StatusReadRate		500		// Set Read Loop rate in milliseconds. (ie 500 = read status.json twice a second)
 										// You may see issues if this is set too small. If you do, raise this value to 750, 1000, or higher
 
@@ -76,7 +70,7 @@
 	//				I've included an example below but so long as you create the folder structure, you can put this anywhere on your PC
 	//				Saves the script states after a game restart or relog. 
 	
-	alias	MyStatusFile		= "C:\\Thrustmaster\\ED_TargetScript\\MyStatusFile.json";
+	alias	MyStatusFile		= "C:\\Thrustmaster\\ED_TargetScript_Warthog\\SupportFiles\\MyWarthogStatusFile.json";
 
 
 //----------------//
@@ -96,7 +90,7 @@
 	int		EnableVoice			= ENABLED;				// ENABLED or DISABLED. Enable this if you wish to use "voice.exe". 
 														// Toggled via tgTxt2Speech();
 														
-	alias	VoicePath			= "C:\\Thrustmaster\\ED_TargetScript\\voice.exe";
+	alias	VoicePath			= "C:\\Thrustmaster\\ED_TargetScript_Warthog\\SupportFiles\\voice.exe";
 	
 	int		VoiceVolume			= 75;					// Default Volume set at 75% Settable via fnVoiceVolume()
 														// Note: VoiceVolume gets saved to MyStatus file when game halts and is reloaded at script start
@@ -135,13 +129,13 @@
 	// Refer fnSoundFX() function for usage etc
 	// Set SoundPath to where you copied sounder.exe. 
 	// Set WAVPath to where you copied any wav files you wish to use
-	// Set 'SoundCMD' for any command line arguments you wish to use 
+	// Set 'SoundCMD' to include the command line arguments you wish to use 
 	// Run sounder.exe in a command prompt window (from where you copied it) with no arguments etc to see a list of options
 
 	int		EnableSoundFX		= ENABLED; 				// ENABLED or DISABLED. Enable this if you wish to use "sounder.exe"
 	
-	alias	SoundPath			= "C:\\Thrustmaster\\ED_TargetScript\\sounder.exe";
-	alias	WAVPath				= "C:\\Thrustmaster\\ED_TargetScript\\sounds\\";
+	alias	SoundPath			= "C:\\Thrustmaster\\ED_TargetScript_Warthog\\SupportFiles\\sounder.exe";
+	alias	WAVPath				= "C:\\Thrustmaster\\ED_TargetScript_Warthog\\SupportFiles\\sounds\\";
 	alias	SoundCMD			= "";
 
 
